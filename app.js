@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV !== "production") {
-    require('dotenv').config();
+    require('dotenv').config()
 }
 // *********************************** 
 //            REQUIRE  
@@ -11,6 +11,7 @@ const ejsMate = require('ejs-mate')
 const ExpressError = require('./utils/ExpressError')
 const express = require('express')
 const app = express()
+app.locals.moment = require("moment");
 const hotelRoutes = require('./routes/hotels')
 const reviewRoutes = require('./routes/reviews')
 const userRoutes = require('./routes/users')
@@ -23,6 +24,7 @@ const helmet = require('helmet')
 const mongoSanitize = require('express-mongo-sanitize')
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/hotel-booking'
 const MongoDBStore = require("connect-mongo")(session)
+
 
 // ***************************
 // Render forms in directories 
@@ -88,23 +90,23 @@ app.use(session(sessionConfig))
 // **********************************
 //      PASSPORT MIDDLEWARE 
 // **********************************
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new LocalStrategy(User.authenticate()))
 
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
 // ***************************************************************
 // FLASH MIDDLEWARE - success and error are automatically rendered
 // ***************************************************************
-app.use(flash());
+app.use(flash())
 app.use((req, res, next) => {
     console.log(req.session)
     //req.user returns if the user is signed in
-    res.locals.currentUser = req.user;
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
-    next();
+    res.locals.currentUser = req.user
+    res.locals.success = req.flash('success')
+    res.locals.error = req.flash('error')
+    next()
 })
 
 // **********************************
@@ -118,7 +120,7 @@ app.use('/', userRoutes)
 // *****************
 // HELMET MIDDLEWARE 
 // *****************
-app.use(helmet());
+app.use(helmet())
 const scriptSrcUrls = [
     "https://stackpath.bootstrapcdn.com/",
     "https://api.tiles.mapbox.com/",
@@ -126,7 +128,7 @@ const scriptSrcUrls = [
     "https://kit.fontawesome.com/",
     "https://cdnjs.cloudflare.com/",
     "https://cdn.jsdelivr.net",
-];
+]
 const styleSrcUrls = [
     "https://kit-free.fontawesome.com/",
     "https://stackpath.bootstrapcdn.com/",
@@ -134,14 +136,14 @@ const styleSrcUrls = [
     "https://api.tiles.mapbox.com/",
     "https://fonts.googleapis.com/",
     "https://use.fontawesome.com/",
-];
+]
 const connectSrcUrls = [
     "https://api.mapbox.com/",
     "https://a.tiles.mapbox.com/",
     "https://b.tiles.mapbox.com/",
     "https://events.mapbox.com/",
-];
-const fontSrcUrls = [];
+]
+const fontSrcUrls = []
 app.use(
     helmet.contentSecurityPolicy({
         directives: {
@@ -157,17 +159,25 @@ app.use(
                 "data:",
                 "https://res.cloudinary.com/djbw8u5ba/", 
                 "https://cdn.cnn.com/",
+                "https://cf.bstatic.com/"
             ],
             fontSrc: ["'self'", ...fontSrcUrls],
         },
     })
-);
+)
 // **********************************
 // HOME - renders home form
 // **********************************
 app.get('/', (req, res) => {
     res.render('home')
-});
+})
+// **********************************
+// ABOUT - renders about form
+// **********************************
+app.get('/about', (req, res) => {
+    res.render('about')
+})
+
 //If a get/post/put/delete request is sent and the req.params isn't identified
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404))
@@ -176,11 +186,11 @@ app.all('*', (req, res, next) => {
 // ERROR - handles all errors 
 // ***********************************
 app.use((err, req, res, next) => {
-    const { statusCode = 500 } = err;
+    const { statusCode = 500 } = err
     if (!err.message) err.message = 'Oh No, Something Went Wrong!'
     res.status(statusCode).render('error', { err })
 })
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000
 app.listen(port, () => {
     console.log(`Serving on port ${port}`)
 })

@@ -1,78 +1,159 @@
 <% layout('layouts/boilerplate')%>
-    <!-- hotel[title] is used so that app.js can access the input as a req.body value for hotel -->
+<div class="container mb-4">    
     <div class="row">
-        <h1 class="text-center">Edit Hotel</h1>
-        <!-- offset-3 puts this div in the middle 6 columns (3 on either side) -->
-        <div class="col-md-6 offset-md-3">
-            <form action="/hotels/<%=hotel._id%>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
-                <!-- Edit title  -->
-                <div class="mb-3">
-                    <label class="form-label" for="title">Title</label>
-                    <input class="form-control" type="text" id="title" name="hotel[title]"      value="<%=hotel.title %>" required>
-                    <div class="valid-feedback">
-                        Looks good!
-                    </div>
-                </div>
-                <!-- Edit location -->
-                <div class="mb-3">
-                    <label class="form-label" for="location">Location</label>
-                    <input class="form-control" type="text" id="location" name="hotel[location]" value="<%=hotel.location %>" required>
-                    <div class="valid-feedback">
-                        Looks good!
-                    </div>
-                </div>
-                <!-- Edit price -->
-                <div class="mb-3">
-                    <label class="form-label" for="price">Hotel Price</label>
-                    <div class="input-group">
-                        <span class="input-group-text" id="price-label">£</span>
-                        <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price"
-                        aria-describedby="price-label" name="hotel[price]" value="<%=hotel.price %>"
-                        required><div class="valid-feedback">
-                        Looks good!
-                    </div>
-                    </div>
-                </div>
-                <!-- Edit description -->
-                <div class="mb-3">
-                    <label class="form-label" for="description">Description</label>
-                    <textarea class="form-control" type="text" id="description" name="hotel[description]"
-                    required><%= hotel.description%></textarea>
-                <div class="valid-feedback">
-                    Looks good!
-                </div>
-                </div>
-                  <!-- Edit image -->
-                  <div class="mb-3">
-                    <!-- To add more images -->
-                    <!-- name = 'image' has to match the upload.array('image') -->
-                    <div class="form-file custom-file">
-                        <input type="file" class="form-file-input" id="image" name="image" multiple>
-                        <label class="form-file-label" for="image">
-                            <span class="form-file-text custom-file-label">Add more image(s)...</span>
-                            <span class="form-file-button">Browse</span>
-                        </label>
-                    </div>
-                </div>
-                <!-- To delete current images -->
-                <div class="mb-3">
-                    <!-- The first argument represents the element in the images array. The second argument represents the position/index of said element.-->
-                    <% hotel.images.forEach(function(img, i) {  %> 
-                    <img src="<%=img.thumbnail %>" class="img-thumbnail" alt="">
-                    <div class="form-check-inline">
-                        <!-- any checkbox that is checked, its unique value(img.filename) is added to deleteImages which becomes an array when req.body is parsed-->
-                        <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
-                    </div>
-                    <label for="image-<%=i%>">Delete</label>
-                    <% })%>
-                </div>
-                <div class="mb-3">
-                    <button class="btn btn-info">Update Hotel</button>
-                </div>
-            </form>
-            <a href="/hotels/<%=hotel._id%>">Back to hotel</a>
+      <div class="col">
+      </div>
+      <div class="col-12 col-sm-12 col-lg-9">
+        <div class="card shadow border-0">          
+          <div class="card-body">
+<h1 class="text-center">Edit Hotel</h1>
+<!-- hotel[title] is used so that app.js can access the input as a req.body value for hotel -->
+<!-- offset-3 puts this div in the middle 6 columns (3 on either side) -->
+      <form action="/hotels/<%=hotel._id%>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+        <!-- edit title -->
+        <div class="mb-3">
+            <label class="form-label" for="title">Title</label>
+            <input class="form-control" type="text" id="title" name="hotel[title]" value ="<%=hotel.title%>" required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Please provide a hotel title.
+              </div>
         </div>
-    </div>
+        <!-- edit location -->
+        <div class="mb-3">
+            <label class="form-label" for="location">Location</label>
+            <input class="form-control" type="text" id="location" name="hotel[location]" value ="<%=hotel.location%>" required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Please provide a valid location.
+              </div>
+        </div>
+        <!-- edit price -->
+        <div class="mb-3">
+            <label class="form-label" for="price">Price/Night</label>
+            <div class="input-group">
+                <span class="input-group-text" id="price-label">£</span>
+                <input type="text" class="form-control" id="price" aria-label="price"
+                aria-describedby="price-label" name="hotel[price]" value ="<%=hotel.price%>" required>
+            </div>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Please provide a price.
+              </div>
+        </div>
+        <!-- edit description -->
+        <div class="mb-3">
+            <label class="form-label" for="description">Description</label>
+            <textarea class="form-control" type="text" id="description" name="hotel[description]" value ="<%=hotel.description%>" required>
+            </textarea>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+        <div class="invalid-feedback">
+            Please provide a description of your hotel.
+          </div>
+        </div>
+           <!-- edit phone -->
+           <div class="form-group">
+            <label for="">Phone Number</label>
+            <input type="text" class="form-control" name="hotel[phone]" value ="<%=hotel.phone%>" required>
+            <div class="invalid-feedback">
+              Please provide a phone number.
+            </div>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+          </div>
+          <!-- edit booking -->
+          
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="">Booking Window (Start)*</label>
+              <input type="text" class="form-control" name="hotel[start]" value ="<%=hotel.booking.start%>" required>
+              <div class="valid-feedback">
+                Looks good!
+            </div>
+              <div class="invalid-feedback">
+                Please provide a booking window.
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="">Booking Window (End)*</label>
+              <input type="text" class="form-control" name="hotel[end]" value ="<%=hotel.booking.end%>" required>
+              <div class="valid-feedback">
+                Looks good!
+            </div>
+              <div class="invalid-feedback">
+                Please provide a booking window.
+              </div>
+            </div>
+          </div>
+          <!-- edit amneties -->
+          <div class="form-group">
+            <label for="">Amenities separated by commas</label>
+            <input type="text" class="form-control" name="hotel[amneties]" value ="<%=hotel.amneties%>">
+          </div>
+        <!-- edit image -->
+        <div class="mb-3">
+            <label for="">Images</label>
+            <!-- To add more images -->
+            <!-- name = 'image' has to match the upload.array('image') -->
+            <div class="form-file custom-file">
+                <input type="file" class="form-file-input" id="image" name="image" multiple>
+                <label class="form-file-label" for="image">
+                    <span class="form-file-text custom-file-label">Add more image(s)...</span>
+                    <span class="form-file-button">Browse</span>
+                </label>
+            </div>
+        </div>
+        <!-- To delete current images -->
+        <div class="mb-3">
+            <!-- The first argument represents the element in the images array. The second argument represents the position/index of said element.
+            <% hotel.images.forEach(function(img, i) {  %> -->
+            <img src="<%=img.thumbnail %>" class="img-thumbnail" alt="">
+            <div class="form-check-inline">
+                <!-- any checkbox that is checked, its unique value(img.filename) is added to deleteImages which becomes an array when req.body is parsed-->
+                <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+            </div>
+            <label for="image-<%=i%>">Delete</label>
+            <% })%>
+        </div>
+        <div class="mb-3 mt-3 ml-3">
+            <button class="btn btn-info">Edit Hotel</button>
+        </div>
+    </form>
+</div>
+</div>
+</div>
+<div class="col">
+</div>
+</div>
+</div>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              
+
 
 
     

@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const hotels = require('../controllers/hotels')
 const catchAsync = require('../utils/catchAsync')
-const { isLoggedIn, isOwner, validateHotel } = require('../middleware')
+const { isLoggedIn, isOwner, isNotOwner, validateHotel } = require('../middleware')
 const multer = require('multer')
 const { storage } = require('../cloudinary')
 const upload = multer({ storage })
@@ -23,4 +23,5 @@ router.route('/:id')
 
 router.get('/:id/edit', isLoggedIn, isOwner, catchAsync(hotels.renderEditForm))
 
+router.get('/:id/booking', isLoggedIn, isNotOwner, catchAsync(hotels.renderBookingForm))
 module.exports = router;

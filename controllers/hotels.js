@@ -1,21 +1,38 @@
-const Hotel = require('../models/hotel');
-const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
-const mapBoxToken = process.env.MAPBOX_TOKEN;
-const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
-const { cloudinary } = require("../cloudinary");
+const Hotel = require('../models/hotel')
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding")
+const mapBoxToken = process.env.MAPBOX_TOKEN
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken })
+const { cloudinary } = require("../cloudinary")
 
+function escapeRegex(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+}
 // ************************************ 
 // INDEX - renders multiple hotels 
 // ************************************
 module.exports.index = async (req, res) => {
-    const hotels = await Hotel.find({}).populate('popupText');
-    res.render('hotels/index', { hotels })
+    let noMatch = null
+    if(req.query.search) {
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi')
+        const hotels = await Hotel.find({$or: [{title: regex}, {location: regex}]}).populate('popupText')
+              if(hotels.length < 1) {
+                  noMatch = "No hotels match that query, please try again."
+                  res.render("hotels/index", { hotels, noMatch })
+              }
+              else {
+                res.render("hotels/index", { hotels, noMatch })
+              }
+            }
+    else {
+        const hotels = await Hotel.find({}).populate('popupText')
+        res.render('hotels/index', { hotels, noMatch })
+    }
 }
 // **********************************
 // NEW - renders a form
 // **********************************
 module.exports.renderNewForm = (req, res) => {
-    res.render('hotels/new');
+    res.render('hotels/new')
 }
 // *********************************
 // CREATE - creates a new hotel
@@ -25,13 +42,21 @@ module.exports.createHotel = async (req, res, next) => {
         query: req.body.hotel.location,
         limit: 1
     }).send()
-    const hotel = new Hotel(req.body.hotel);
-    hotel.geometry = geoData.body.features[0].geometry;
-    hotel.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    hotel.owner = req.user._id;
-    await hotel.save();
-    console.log(hotel);
-    req.flash('success', 'Successfully made a new hotel!');
+    const hotel = new Hotel(req.body.hotel)
+    hotel.geometry = geoData.body.features[0].geometry
+    hotel.images = req.files.map(f => ({ url: f.path, filename: f.filename }))
+    hotel.booking = {
+        start: req.body.hotel.start,
+        end: req.body.hotel.end
+      }
+    hotel.amneties = req.body.hotel.amneties.split(",");
+    hotel.owner = {
+        id: req.user._id,
+        username: req.user.username
+    }
+    await hotel.save()
+    console.log(hotel)
+    req.flash('success', 'Successfully made a new hotel!')
     res.redirect(`/hotels/${hotel._id}`)
 }
 // **********************************************
@@ -44,12 +69,12 @@ module.exports.showHotel = async (req, res,) => {
         populate: {
             path: 'author'
         }
-    }).populate('author');
+    }).populate('author')
     if (!hotel) {
-        req.flash('error', 'Cannot find that hotel!');
-        return res.redirect('/hotels');
+        req.flash('error', 'Cannot find that hotel!')
+        return res.redirect('/hotels')
     }
-    res.render('hotels/show', { hotel });
+    res.render('hotels/show', { hotel })
 }
 // *******************************************
 // EDIT - renders a form to edit a hotel
@@ -58,10 +83,10 @@ module.exports.renderEditForm = async (req, res) => {
     const { id } = req.params;
     const hotel = await Hotel.findById(id)
     if (!hotel) {
-        req.flash('error', 'Cannot find that hotel!');
-        return res.redirect('/hotels');
+        req.flash('error', 'Cannot find that hotel!')
+        return res.redirect('/hotels')
     }
-    res.render('hotels/edit', { hotel });
+    res.render('hotels/edit', { hotel })
 }
 // *******************************************
 // UPDATE - updates a particular hotel
@@ -80,7 +105,7 @@ module.exports.updateHotel = async (req, res) => {
     await hotel.save();
     if (req.body.deleteImages) {
         for (let filename of req.body.deleteImages) {
-            await cloudinary.uploader.destroy(filename);
+            await cloudinary.uploader.destroy(filename)
         }
         await hotel.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
     }
@@ -88,11 +113,25 @@ module.exports.updateHotel = async (req, res) => {
     res.redirect(`/hotels/${hotel._id}`)
 }
 // *******************************************
+// BOOKING - renders the booking page
+// *******************************************
+module.exports.renderBookingForm = async (req, res) => {
+    const { id } = req.params
+    const hotel = await Hotel.findById(id)
+    if (!hotel) {
+        req.flash('error', 'Cannot find that hotel!')
+        return res.redirect('/hotels')
+    }
+    res.render('hotels/booking', { hotel})
+}
+// *******************************************
 // DELETE/DESTROY- removes a single hotel
 // *******************************************
 module.exports.deleteHotel = async (req, res) => {
-    const { id } = req.params;
-    await Hotel.findByIdAndDelete(id);
+    const { id } = req.params
+    await Hotel.findByIdAndDelete(id)
     req.flash('success', 'Successfully deleted hotel')
-    res.redirect('/hotels');
+    res.redirect('/hotels')
 } 
+
+

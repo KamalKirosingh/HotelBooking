@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KamalKirosingh/YelpCamp.git"
+    "url": "git+https://github.com/KamalKirosingh/HotelBooking.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/KamalKirosingh/YelpCamp/issues"
+    "url": "https://github.com/KamalKirosingh/HotelBooking/issues"
   },
-  "homepage": "https://github.com/KamalKirosingh/YelpCamp#readme",
+  "homepage": "https://github.com/KamalKirosingh/HotelBooking#readme",
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.11.0",
     "cloudinary": "^1.23.0",
@@ -31,7 +31,9 @@
     "express-session": "^1.17.1",
     "helmet": "^4.4.1",
     "joi": "^17.3.0",
+    "joi-password-complexity": "^5.1.0",
     "method-override": "^3.0.0",
+    "moment": "^2.29.1",
     "mongoose": "^5.11.9",
     "multer": "^1.4.2",
     "multer-storage-cloudinary": "^4.0.0",

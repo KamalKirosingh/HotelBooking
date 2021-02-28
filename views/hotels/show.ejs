@@ -33,11 +33,16 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item text-muted"><%= hotel.location%></li>
-                <li class="list-group-item">Submitted by <%= hotel.owner.username%></li>
-                <li class="list-group-item">$<%= hotel.price%>/night</li>
+                <li class="list-group-item text-muted"><span>Submitted by
+                    <a href="/users/<%= hotel.owner.id %>">
+                      <%= hotel.owner.username %></a> on
+                    <%= moment(hotel.createdAt).format('LL') %>
+                  </span>
+                </li>
+                <li class="list-group-item">£<%= hotel.price%>/night</li>
             </ul>
             <!-- if current user is owner, they can edit/delete hotel -->
-            <%  if( currentUser && hotel.owner.equals(currentUser._id))  {%>
+            <%  if( currentUser && hotel.owner.id.equals(currentUser._id))  {%>
             <div class="card-body">
                 <a class="card-link btn btn-info" href="/hotels/<%=hotel._id%>/edit">Edit</a>
                 <form class="d-inline" action="/hotels/<%=hotel._id%>?_method=DELETE" method="POST">
@@ -46,12 +51,9 @@
             </div>
             <% } else {%>
                 <div class="card-body">
-                    <a class="card-link btn btn-success" href="/hotels/<%=hotel._id%>/book">Book</a>
+                    <a class="card-link btn btn-success" href="/hotels/<%=hotel._id%>/booking">Book</a>
                 </div>
                 <% } %>
-            <div class="card-footer text-muted">
-                2 days ago
-            </div>
         </div>
 
     </div>
@@ -59,13 +61,9 @@
         <!-- the map -->
         <div id='map' ></div>
         <!-- if the user is logged in, they can leave a review -->
-        <% if(currentUser && !hotel.owner.equals(currentUser._id))  {%>
+        <% if(currentUser && !hotel.owner.id.equals(currentUser._id))  {%>
             <h2>Leave a Review</h2>
             <form action="/hotels/<%=hotel._id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
-                <!-- <div class="mb-3">
-                    <label class="form-label" for="rating">Rating</label>
-                    <input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating">
-                </div> -->
                 <fieldset class="starability-basic">
                     <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked
                         aria-label="No rating." />
@@ -91,18 +89,19 @@
             </form>
             <% } %>
             <!-- show all reviews -->
-            <h2>Reviews</h2>
+            <h2 class="text-center mt-5">Reviews</h2>
             <% for(let review of hotel.reviews) { %>
             <div class="card mb-3 ">
                 <div class="card-body">
-                    <h5 class="card-title"> <%= review.author.username%></h5>
                     <p class="starability-result" data-rating="<%=review.rating%>">
                         Rated: <%= review.rating %> stars
                     </p>
-                    <h6 class="card-subtitle mb-2 text-muted">By <%= review.author.username%></h6>
+                    <a href="/users/<%= review.author.id %>">
+                        <%= review.author.username %>
+                      </a>
                     <p class="card-text">Review: <%= review.body %></p>
                     <!-- if current user is logged in & review author, let them delete review -->
-                    <%  if( currentUser && review.author.equals(currentUser._id))  {%>
+                    <%  if( currentUser && review.author.id.equals(currentUser._id))  {%>
                     <form action="/hotels/<%=hotel._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
                         <button class="btn btn-sm btn-danger">Delete</button>
                     </form>

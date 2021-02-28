@@ -1,0 +1,28 @@
+.input-group-addon {
+  background-color: transparent;
+  border-left: 0;
+}
+
+.cc-number.identified {
+  background-repeat: no-repeat;
+  background-position-y: 3px;
+  background-position-x: 99%;
+}
+
+.cc-number.visa {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAeCAYAAABqpJ3BAAAABHNCSVQICAgIfAhkiAAABLhJREFUWIXtmGtMFGcUhp9vdhaWBceyuCjFCwouIBhQ0agYMYKphraoMbZVY9T+0NQ/pbZpE2uTpknTJk1JWnszsdVqrVbTRpNeTDCtqRULoiAW2S1euClQdhfXZYHdYac/djtgtMVWE6Dx/TVzvnO+ed9z+WYyAsDhcCQCJZqm5WuaZmEYQwjhEkKcAIptNluLqKqqSjSbzTVxcXExiqIYZVkeao7/CFVV8Xg8AafT6fX5fNNls9lcEhcXN8pisQxv5mHIsozFYjECMUCJFAwGCxRFGRHkB0JRFGMwGCyQgNjh3jZ3Q5hzrDTURO4XDwUMNR4KGGrc9fhR/6hFddUj0EIGYcAwJh3Zkqz7+Lr9HC+9CEBUVARLCzL59vgF/H6VmOhIlizOACAY1Cgrv0xVTRNt7TcxGCTiraNY/8x8os2R+n7XGju48FszfWoQRYkiPy/9vwuQrdMwRMfT6zhG17ldEPAhRcQQu+EUiFDRDn1dwVsl3wGweeMi5s1J5oXthwBYON/GksUZ3PL2sH7Lbmrrrt/xjFVFOboAd6ePFWs/wNftByDCKFN5cgcREYMf73/rIcxjMGVv4tV9PWzOKsPSXU2f+woGS0pYQDkARtnAuqfm4qhv02OTJ1sBeOf94zr5x/IzKVg0Db9f5Vx1A6OVKN1/38EynTyAP6BSU9vCrOxJgwoYdAamZmZQtHMCbcaZqB2XADhz9gpXGzoAKFyaRfyYUTjqW/tjkscCUHWhUbctL5zBk8uyWFU0izdfW6lnt6cnwIEjZwCYN7u/Rc8PiL0vAXm5NvqCgqd3JdJwtRmAg0fK9fWNa+YDYB9QgalT4gGYmdWfwee27eelHYdpvu6+bf8jRytxd/oAeKV4mV6Zc9UND0ZAmi2BsVaFXhVKjgbocHop/akWCGUszZYAoFdACEFyWMDLzy9j9YrZCCHQNI1j31fx+Or3OP3rZSA04HsO/AJAVuYE0mwJZE+fCMD56gdUAYC83FQAfqxo59P9pwiofQBsWrdA9/n9cqgCiQmP6MNpMhl5Y/tyDu/ZQk52EgDdPX5ef/sYAD+cuEhTiwuAuTlTqHPcYGy8AoCrs4trjc4HJGCBDQBN09j75WkAkpOsLMwN2d2dXXi7egGwpYwLEw3o8dMzxvPhu+sQQgDg84UGdvfnP+s+n+w5SdGanXz1TYVuu5c2uqfP0HlzUjDKBgJqH2o4+xvW5urrN1pv6te2lNAAb9r6GQAZ6Y9ilA2UV15F00LvlcV5aZw5e4WLl1oAiImOJDLSqO/hcnehaRrnqxtZ+cTM+xcQbY4gZ0YSZRWh3rXERrO8cIa+3treLyA1XAFHfSvert47sliwaBrbtxWy9cUvdNvej58lMz1Rv1+1/iNqapuprG7A6fJiMhlve+kNhKirq9NSU1MHFdHh9OJyewFQFDPjwr0K4LnVQ2tbJwATx8dhMhlpanHT0NSB19uLpmmMHh3FlKR4Pe6voTfIBpKTrLc9q7Xdg8fjQwjB5ElWJEkgSeIOTna7/d4FDEfY7faR/zH3UMBQ438hwK2q6lDz+NcIc3ZLkiSVejyeEafA4/EEJEkqlX0+XzFQAIy4X4tAsYCR/XP3T6N8y7XxxywcAAAAAElFTkSuQmCC);
+}
+
+.one-card > div {
+  height: 150px;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.two-card > div {
+  height: 80px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 48%;
+}
