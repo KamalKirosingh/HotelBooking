@@ -34,7 +34,7 @@ module.exports.hotelSchema = Joi.object({
         phone: Joi.number().required().min(0),
         start: Joi.string().required().escapeHTML(),
         end: Joi.string().required().escapeHTML(),
-        amneties: Joi.string().required().escapeHTML()
+        amneties: Joi.string().required().escapeHTML(),
     }).required(),
     deleteImages: Joi.array()
 })

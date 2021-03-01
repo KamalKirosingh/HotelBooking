@@ -63,7 +63,7 @@ module.exports.isNotOwner = async (req, res, next) => {
     const { id } = req.params
     const hotel = await Hotel.findById(id)
     if (hotel.owner.id.equals(req.user._id)) {
-        req.flash('error', 'You do not have permission to do that!')
+        req.flash('error', 'You are the owner!')
         return res.redirect(`/hotels/${id}`)
     }
     next()

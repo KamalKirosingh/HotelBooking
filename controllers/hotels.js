@@ -3,6 +3,7 @@ const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding")
 const mapBoxToken = process.env.MAPBOX_TOKEN
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken })
 const { cloudinary } = require("../cloudinary")
+const hotel = require('../models/hotel')
 
 function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
@@ -23,6 +24,9 @@ module.exports.index = async (req, res) => {
                 res.render("hotels/index", { hotels, noMatch })
               }
             }
+
+
+            
     else {
         const hotels = await Hotel.find({}).populate('popupText')
         res.render('hotels/index', { hotels, noMatch })
@@ -49,7 +53,7 @@ module.exports.createHotel = async (req, res, next) => {
         start: req.body.hotel.start,
         end: req.body.hotel.end
       }
-    hotel.amneties = req.body.hotel.amneties.split(",");
+    hotel.amneties = req.body.hotel.amneties.split(",")
     hotel.owner = {
         id: req.user._id,
         username: req.user.username
@@ -74,8 +78,24 @@ module.exports.showHotel = async (req, res,) => {
         req.flash('error', 'Cannot find that hotel!')
         return res.redirect('/hotels')
     }
-    res.render('hotels/show', { hotel })
+    // if the user has made a review already
+    const ratingsArray = []
+    hotel.reviews.forEach(function(rating) {
+        ratingsArray.push(rating.rating);
+      })
+      if (ratingsArray.length === 0) {
+        hotel.rateAvg = 0;
+      } else {
+        const ratings = ratingsArray.reduce(function(total, rating) {
+          return total + rating;
+        })
+        hotel.rateAvg = ratings / hotel.reviews.length;
+        hotel.rateCount = hotel.reviews.length;
+      }
+      hotel.save();
+      res.render('hotels/show', { hotel })
 }
+      
 // *******************************************
 // EDIT - renders a form to edit a hotel
 // *******************************************
@@ -92,24 +112,24 @@ module.exports.renderEditForm = async (req, res) => {
 // UPDATE - updates a particular hotel
 // *******************************************
 module.exports.updateHotel = async (req, res) => {
-    const { id } = req.params;
-    const hotel = await Hotel.findByIdAndUpdate(id, { ...req.body.hotel });
+    const { id } = req.params
+    const hotel = await Hotel.findByIdAndUpdate(id, { ...req.body.hotel })
     const geoData = await geocoder.forwardGeocode({
         query: req.body.hotel.location,
         limit: 1
     }).send()
-    hotel.geometry = geoData.body.features[0].geometry;
-    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    hotel.geometry = geoData.body.features[0].geometry
+    const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }))
     //... spreads the imgs array so that each element in imgs is passes seperately into hotels.images
-    hotel.images.push(...imgs);
-    await hotel.save();
+    hotel.images.push(...imgs)
+    await hotel.save()
     if (req.body.deleteImages) {
         for (let filename of req.body.deleteImages) {
             await cloudinary.uploader.destroy(filename)
         }
         await hotel.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
     }
-    req.flash('success', 'Successfully updated hotel!');
+    req.flash('success', 'Successfully updated hotel!')
     res.redirect(`/hotels/${hotel._id}`)
 }
 // *******************************************
