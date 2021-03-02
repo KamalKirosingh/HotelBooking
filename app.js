@@ -106,6 +106,7 @@ app.use((req, res, next) => {
     res.locals.currentUser = req.user
     res.locals.success = req.flash('success')
     res.locals.error = req.flash('error')
+    // the variables get automatically passed into the rendered paged
     next()
 })
 
@@ -115,7 +116,6 @@ app.use((req, res, next) => {
 app.use('/hotels', hotelRoutes)
 app.use('/hotels/:id/reviews', reviewRoutes)
 app.use('/', userRoutes)
-
 
 // *****************
 // HELMET MIDDLEWARE 

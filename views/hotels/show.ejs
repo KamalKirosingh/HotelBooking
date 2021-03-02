@@ -65,7 +65,7 @@
           <div class="card shadow-sm">
               <!-- show image -->
             <div id="hotelCarousel" class="carousel slide" data-ride="carousel">
-                <div class="carousel-inner">
+                <div class="carousel-inner show-image">
                     <!-- make the first image "active" - displayed first -->
                     <% hotel.images.forEach((img, i) => {  %>
                     <div class="carousel-item <%= i === 0 ? 'active' : ''%>">
@@ -98,7 +98,7 @@
                   <small class="text-muted">No Reviews</small>
                 <% } else { %>
                   <% let stars = ['<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>'] %>
-                  <% for(let i = 0; i < Math.round(hotel.rateAvg); i++) { %>
+                  <% for(let i = 0; i < Math.round(hotel.reviewAvg); i++) { %>
                       <% stars[i] = '<small><i class="fas fa-star text-success"></i></small>' %>
                   <% } %>
                   <% for(let i = 0; i < stars.length; i++) { %>
@@ -119,7 +119,7 @@
                 <span>Submitted by
                 <a href="/users/<%= hotel.owner.id %>">
                   <%= hotel.owner.username %></a> on
-                <%= moment(hotel.createdAt).format('LL') %>
+                <%= moment(hotel.created).format('LL') %>
               </span>
                   <!-- if current user is owner, they can edit/delete hotel -->
               <% if(currentUser && hotel.owner.id.equals(currentUser._id)) { %>
@@ -204,7 +204,7 @@
                     <% for(let i = 0; i < stars2.length; i++) { %>
                       <%- stars2[i] %>
                     <% } %>
-                    <small><%= moment(review.createdAt).fromNow() %></small>
+                    <small><%= moment(review.created).fromNow() %></small>
                   </span>
                         </p>
                         <span class="text-muted">

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const ReviewSchema = new Schema({
     body: String,
     rating: Number,
-    createdAt: { type: Date, default: Date.now },
+    created: { type: Date, default: Date.now },
     author: {
         id: {
           type: mongoose.Schema.Types.ObjectId,

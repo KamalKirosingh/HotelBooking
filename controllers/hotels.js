@@ -3,7 +3,6 @@ const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding")
 const mapBoxToken = process.env.MAPBOX_TOKEN
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken })
 const { cloudinary } = require("../cloudinary")
-const hotel = require('../models/hotel')
 
 function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
@@ -13,6 +12,7 @@ function escapeRegex(text) {
 // ************************************
 module.exports.index = async (req, res) => {
     let noMatch = null
+    // if the user searches a hotel
     if(req.query.search) {
         const regex = new RegExp(escapeRegex(req.query.search), 'gi')
         const hotels = await Hotel.find({$or: [{title: regex}, {location: regex}]}).populate('popupText')
@@ -24,12 +24,27 @@ module.exports.index = async (req, res) => {
                 res.render("hotels/index", { hotels, noMatch })
               }
             }
-
-
-            
-    else {
-        const hotels = await Hotel.find({}).populate('popupText')
-        res.render('hotels/index', { hotels, noMatch })
+    // if the user filters
+    else if (req.query.sortby) {
+        if (req.query.sortby === "reviewAvg") {
+          const hotels = await Hotel.find({}).sort({reviewAvg: -1}).populate('popupText')
+          res.render("hotels/index", { hotels, noMatch })
+           }
+        else if (req.query.sortby === "reviewCount") {
+          const hotels = await Hotel.find({}).sort({reviewCount: -1}).populate('popupText')
+          res.render("hotels/index", { hotels, noMatch })
+          } 
+        else if (req.query.sortby === "priceLow") {
+        const hotels = await Hotel.find({}).sort({price: 1}).populate('popupText')
+        res.render("hotels/index", { hotels, noMatch })
+       }
+        else {
+          const hotels = await Hotel.find({}).sort({price: -1}).populate('popupText')
+          res.render("hotels/index", { hotels, noMatch })
+          }
+  } else {
+      const hotels = await Hotel.find({}).populate('popupText')
+      res.render('hotels/index', { hotels, noMatch })
     }
 }
 // **********************************
@@ -84,13 +99,13 @@ module.exports.showHotel = async (req, res,) => {
         ratingsArray.push(rating.rating);
       })
       if (ratingsArray.length === 0) {
-        hotel.rateAvg = 0;
+        hotel.reviewAvg = 0;
       } else {
         const ratings = ratingsArray.reduce(function(total, rating) {
           return total + rating;
         })
-        hotel.rateAvg = ratings / hotel.reviews.length;
-        hotel.rateCount = hotel.reviews.length;
+        hotel.reviewAvg = ratings / hotel.reviews.length;
+        hotel.reviewCount = hotel.reviews.length;
       }
       hotel.save();
       res.render('hotels/show', { hotel })

@@ -11,11 +11,11 @@
                   </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <form class="sortForm" action="/hotels" method="GET">
-                    <input type="text" name="sortby" value="rateAvg" class="d-none">
+                    <input type="text" name="sortby" value="reviewAvg" class="d-none">
                     <button type="submit" class="dropdown-item">Highest Rated</button>
                   </form>
                   <form class="sortForm" action="/hotels" method="GET">
-                    <input type="text" name="sortby" value="rateCount" class="d-none">
+                    <input type="text" name="sortby" value="reviewCount" class="d-none">
                     <button type="submit" class="dropdown-item">Most Reviewed</button>
                   </form>
                   <form class="sortForm" action="/hotels" method="GET">
@@ -43,7 +43,6 @@
           </div>
         </div>
       </nav>
-    
       <div class="container mb-5">
         <div class="d-block d-none d-md-none">
             <% if(noMatch !== null) { %>
@@ -63,7 +62,7 @@
         <div class="col-sm-12 col-md-6 col-lg-4">
             <div class="card shadow border-0 mt-4">
             <%if(hotel.images.length > 0) {%>
-              <a href="/hotels/<%= hotel._id %>"><img class="card-img-top" src="<%= hotel.images[0].url %>"></a>
+              <a href="/hotels/<%= hotel._id %>"><img class="card-img-top index-image" src="<%= hotel.images[0].url %>"></a>
               <% }else {%>
                 <a href="/hotels/<%= hotel._id %>"><img class="card-img-top" src="https://res.cloudinary.com/djbw8u5ba/image/upload/v1614356145/HotelBooking/unvlmlhsrcdkqjvcz3ie.jpg"></a>
                 <% } %>
@@ -76,7 +75,7 @@
                     <span class="text-muted">No Reviews</span>
                   <% } else { %>
                     <% let stars = ['<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>'] %>
-                    <% for(let i = 0; i < Math.round(hotel.rateAvg); i++) { %>
+                    <% for(let i = 0; i < Math.round(hotel.reviewAvg); i++) { %>
                         <% stars[i] = '<i class="fas fa-star text-success "></i>' %>
                     <% } %>
                     <% for(let i = 0; i < stars.length; i++) { %>

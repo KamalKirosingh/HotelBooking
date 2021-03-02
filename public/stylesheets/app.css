@@ -27,6 +27,14 @@ a {
   background: #f7f7f7;
 }
 
+.index-image {
+  height: 200px;
+}
+
+.show-image {
+  height: 480px;
+}
+
 #map {
   height: 400px;
   width: 100%;

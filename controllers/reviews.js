@@ -18,7 +18,7 @@ module.exports.createReview = async (req, res) => {
         review.author.id = req.user._id
         review.author.username = req.user.username
         hotel.hasRated.push(req.user._id)
-        hotel.rateCount = hotel.reviews.length
+        hotel.reviewCount = hotel.reviews.length
         hotel.reviews.push(review)
         await review.save()
         await hotel.save()
@@ -46,8 +46,8 @@ module.exports.deleteReview = async (req, res) => {
     await Hotel.findByIdAndUpdate(id, { $pull: { reviews: reviewId } })
     await Hotel.findByIdAndUpdate(id, { $pull: { hasRated: { $in: [req.user._id]}}})
     const hotel = await Hotel.findById(id)
-    var rateCount = hotel.rateCount
-    await Hotel.findByIdAndUpdate(id, {$set: {rateCount: rateCount-1}})
+    const reviewCount = hotel.reviewCount
+    await Hotel.findByIdAndUpdate(id, {$set: {reviewCount: reviewCount-1}})
     await Review.findByIdAndDelete(reviewId)
     req.flash('success', 'Successfully deleted review')
     res.redirect(`/hotels/${id}`)

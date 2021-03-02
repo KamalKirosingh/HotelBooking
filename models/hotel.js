@@ -21,7 +21,7 @@ const HotelSchema = new Schema({
     price: Number,
     phone: String,
     amneties: [],
-    createdAt: { type: Date, default: Date.now },
+    created: { type: Date, default: Date.now },
     geometry: {
         type: {
             type: String,
@@ -48,18 +48,18 @@ const HotelSchema = new Schema({
             ref: 'Review'
         }
     ],
-    booking: {
-        start: String,
-        end: String
-      },
-    rateAvg: Number,
-    rateCount: Number,
+    reviewAvg: Number,
+    reviewCount: Number,
     hasRated: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
     }
-  ]
+  ],
+    booking: {
+        start: String,
+        end: String
+      }
 }, opts)
 
 
