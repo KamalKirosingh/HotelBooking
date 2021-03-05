@@ -1,14 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const passport = require('passport');
-const catchAsync = require('../utils/catchAsync');
-const users = require('../controllers/users');
-const { isLoggedIn } = require('../middleware');
-// const { validateUser } = require('../middleware')
+const express = require('express')
+const router = express.Router()
+const passport = require('passport')
+const catchAsync = require('../utils/catchAsync')
+const users = require('../controllers/users')
+const { isLoggedIn, isProfileOwner } = require('../middleware')
+
 
 router.route('/register')
     .get(users.renderRegister)
-    .post(catchAsync(users.register));
+    .post(catchAsync(users.register))
 
 router.route('/login')
     .get(users.renderLogin)
@@ -16,6 +16,19 @@ router.route('/login')
 
 router.get('/logout', users.logout)
 
-router.get('/users/:id', isLoggedIn, users.showProfile)
+router.route('/users/:userId')
+.get(catchAsync(users.showProfile))
+.put(isProfileOwner, catchAsync(users.updateProfile))
+.delete(isProfileOwner, (users.deleteUser))
+
+router.get('/users/:userId/edit', isLoggedIn, isProfileOwner, catchAsync(users.renderEditForm))
+
+router.route('/forgot')
+.get(users.renderForgot)
+.post(users.forgot)
+
+router.route('/reset/:token')
+.get(users.renderReset)
+.post(users.reset)
 
 module.exports = router;

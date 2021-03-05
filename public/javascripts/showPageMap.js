@@ -1,3 +1,6 @@
+// ENTIRE FILE CODE RE-USED FROM: https://docs.mapbox.com/mapbox-gl-js/api/
+
+
 mapboxgl.accessToken = mapToken;
 const map = new mapboxgl.Map({
     //container must match the id of the map in show.ejs

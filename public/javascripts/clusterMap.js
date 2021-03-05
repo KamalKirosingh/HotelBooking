@@ -1,3 +1,5 @@
+// CODE REFERENCED FROM: https://docs.mapbox.com/mapbox-gl-js/api/map/#map#addsource
+
 mapboxgl.accessToken = mapToken;
 const map = new mapboxgl.Map({
     container: 'cluster-map',

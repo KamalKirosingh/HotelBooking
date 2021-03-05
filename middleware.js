@@ -2,24 +2,13 @@ const { hotelSchema, reviewSchema } = require('./schemas.js')
 const ExpressError = require('./utils/ExpressError')
 const Hotel = require('./models/hotel')
 const Review = require('./models/review')
+const User = require('./models/user')
+
 //use app.use as middleware to access any request to any route, 
 //use functions like validateHotel to access any request to a specific route
 //The "is" middleware are used to stop behind the scene unauthorised access to these routes, such as querying the link "/edit" manually.
 //The unauthorised users are otherwise prevented access directly in the ejs files.
 
-// // *********************************************************
-// // VALIDATE MIDDLEWARE - If the user req.body is valid 
-// // *********************************************************
-// module.exports.validateUser = (req, res, next) => {
-//     //.validate uses the joi method
-//     const { error } = userSchema.validate(req.body)
-//     if (error) {
-//         const msg = error.details.map(el => el.message).join(',')
-//         throw new ExpressError(msg, 400)
-//     } else {
-//         next()
-//     }
-// }
 // *******************************************
 // LOGIN MIDDLEWARE - If the user is logged in 
 // *******************************************
@@ -92,3 +81,15 @@ module.exports.validateReview = (req, res, next) => {
         next()
     }
 } 
+// *************************************************************
+// PROFILE OWNER MIDDLEWARE - If the user is the profile author
+// *************************************************************
+module.exports.isProfileOwner = async (req, res, next) => {
+    const { userId } = req.params
+    const user = await User.findById(userId)
+    if (!user._id.equals(req.user._id)) {
+        req.flash('error', 'You do not have permission to do that!')
+        return res.redirect(`/hotels`)
+    }
+    next()
+}

@@ -97,6 +97,7 @@
                 <% if(hotel.reviews.length === 0) { %>
                   <small class="text-muted">No Reviews</small>
                 <% } else { %>
+                   <!-- STAR CODE RE-USED FROM: https://github.com/LunarLogic/starability -->
                   <% let stars = ['<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>'] %>
                   <% for(let i = 0; i < Math.round(hotel.reviewAvg); i++) { %>
                       <% stars[i] = '<small><i class="fas fa-star text-success"></i></small>' %>
@@ -165,6 +166,7 @@
                             <fieldset class="starability-basic">
                                 <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked
                                     aria-label="No rating." />
+                               <!-- STAR CODE RE-USED FROM: https://github.com/LunarLogic/starability -->
                                 <input type="radio" id="first-rate1" name="review[rating]" value="1" />
                                 <label for="first-rate1" title="Terrible">1 star</label>
                                 <input type="radio" id="first-rate2" name="review[rating]" value="2" />
@@ -197,12 +199,13 @@
                             <%= review.author.username %>
                           </a>
                           <span class="float-right text-muted">
-                    <% let stars2 = ['<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>'] %>
+                     <!-- STAR CODE RE-USED FROM: https://github.com/LunarLogic/starability -->
+                    <% let stars = ['<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>', '<small><i class="far fa-star text-success"></i></small>'] %>
                     <% for(let i = 0; i < review.rating; i++) { %>
-                        <% stars2[i] = '<small><i class="fas fa-star text-success"></i></small>' %>
+                        <% stars[i] = '<small><i class="fas fa-star text-success"></i></small>' %>
                     <% } %>
-                    <% for(let i = 0; i < stars2.length; i++) { %>
-                      <%- stars2[i] %>
+                    <% for(let i = 0; i < stars.length; i++) { %>
+                      <%- stars[i] %>
                     <% } %>
                     <small><%= moment(review.created).fromNow() %></small>
                   </span>

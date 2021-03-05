@@ -3,6 +3,8 @@
 <div class="container"></div>
     <nav id="searchNav" class="navbar navbar-expand navbar-light bg-white shadow-sm">
         <div class="container">
+
+          <!-- navbar -->
           <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
               <li class="nav-item dropdown">
@@ -30,6 +32,7 @@
                 </div>
               </li>
             </ul>
+            <!-- search hotels -->
             <div class="d-none d-md-block">
               <form action="/hotels" method="GET" class="input-group">
                 <input type="text" class="form-control" type="text" name="search" placeholder="Search Hotels..." aria-label="Search">
@@ -57,6 +60,7 @@
           </form>
           <% } %>
         </div>
+        <!-- show hotels -->
         <div class="row">
     <% for (let hotel of hotels){%>
         <div class="col-sm-12 col-md-6 col-lg-4">
@@ -74,6 +78,7 @@
                   <% if(hotel.reviews.length === 0) { %>
                     <span class="text-muted">No Reviews</span>
                   <% } else { %>
+                    <!-- STAR CODE RE-USED FROM: https://github.com/LunarLogic/starability -->
                     <% let stars = ['<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>'] %>
                     <% for(let i = 0; i < Math.round(hotel.reviewAvg); i++) { %>
                         <% stars[i] = '<i class="fas fa-star text-success "></i>' %>
@@ -89,7 +94,6 @@
                   <% } %>
                   <span class="ml-3">£<%= hotel.price %>/Night</span>
                 </h6>
-                <!-- <span>£<%= hotel.price %>/Night</span> -->
               </div>
             </div>
           </div>
