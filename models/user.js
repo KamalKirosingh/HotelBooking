@@ -8,6 +8,7 @@ const UserSchema = new Schema({
     resetPasswordExpires: Date,
     joined: { type: Date, default: Date.now },
     fullName: String,
+    isAdmin: {type: Boolean, default: false}
 })
 
 UserSchema.plugin(passportLocalMongoose)

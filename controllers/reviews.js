@@ -43,8 +43,9 @@ module.exports.editReview = async (req, res) => {
 // ***************************************
 module.exports.deleteReview = async (req, res) => {
     const { id, reviewId } = req.params
+    const review = await Review.findById(reviewId)
     await Hotel.findByIdAndUpdate(id, { $pull: { reviews: reviewId } })
-    await Hotel.findByIdAndUpdate(id, { $pull: { hasRated: { $in: [req.user._id]}}})
+    await Hotel.findByIdAndUpdate(id, { $pull: { hasRated: { $in: [review.author.id]}}})
     const hotel = await Hotel.findById(id)
     const reviewCount = hotel.reviewCount
     await Hotel.findByIdAndUpdate(id, {$set: {reviewCount: reviewCount-1}})

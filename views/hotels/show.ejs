@@ -122,8 +122,8 @@
                   <%= hotel.owner.username %></a> on
                 <%= moment(hotel.created).format('LL') %>
               </span>
-                  <!-- if current user is owner, they can edit/delete hotel -->
-              <% if(currentUser && hotel.owner.id.equals(currentUser._id)) { %>
+                  <!-- if current user is owner or admin, they can edit/delete hotel -->
+              <% if(currentUser && hotel.owner.id.equals(currentUser._id) || currentUser && currentUser.isAdmin) { %>
                 <form action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST" class="float-right">
                   <button class="btn text-dark btn-lg">
                   <i class="fas fa-trash-alt"></i>
@@ -154,6 +154,17 @@
                         <%= hotel.reviews.length %> reviews
                           <% } %>
                 </li>
+                <% } else if (currentUser && currentUser.isAdmin) { %>
+                  <li class="list-group-item list-group-item-light">
+                    This hotel has
+                    <% if (hotel.reviews.length === 0) { %>
+                      no reviews.
+                      <% } else if (hotel.reviews.length === 1) { %>
+                        1 review
+                        <% } else { %>
+                          <%= hotel.reviews.length %> reviews
+                            <% } %>
+                  </li>
                 <% } else { %>
                   <li class="list-group-item list-group-item-light">
                     <button class="btn btn-success float-right" data-toggle="collapse" data-target="#collapseReview" aria-expanded="false" aria-controls="collapseReview">Write a Review</button>
@@ -209,14 +220,23 @@
                     <% } %>
                     <small><%= moment(review.created).fromNow() %></small>
                   </span>
-                        </p>
+                    </p>
                         <span class="text-muted">
                   <%- review.body %>
                 </span>
-                <!-- if current user is review author, they can edit/delete review -->
-                        <% if(currentUser && review.author.id.equals(currentUser._id)) { %>
-                          <div class="float-right">
-                            <a class="btn text-dark" data-toggle="collapse" data-target="#editReview" aria-expanded="false" aria-controls="editReview">
+                  <!-- if current user is admin, they can delete review -->
+                   <% if (currentUser && currentUser.isAdmin) { %>
+                    <form id="deleteForm" action="/hotels/<%= hotel._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST" class="float-right">
+                      <button class="btn text-dark">
+                          <!-- delete icon -->
+                <i class="fas fa-trash-alt"></i>
+              </button>
+                    </form>
+                    <% } %>
+                    <!-- if current user is review author, they can edit/delete review -->
+                     <% if(currentUser && review.author.id.equals(currentUser._id)) { %>
+                        <div class="float-right">
+                         <a class="btn text-dark" data-toggle="collapse" data-target="#editReview" aria-expanded="false" aria-controls="editReview">
                       <i class="fas fa-pencil-alt"></i>
                     </a>
                     <!-- delete review -->

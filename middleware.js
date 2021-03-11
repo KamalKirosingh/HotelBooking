@@ -34,19 +34,19 @@ module.exports.validateHotel = (req, res, next) => {
     }
 }
 // *******************************************************************
-// HOTEL OWNER MIDDLEWARE - If the user is the hotel owner
+// HOTEL OWNER MIDDLEWARE - If the user is the hotel owner or admin
 // *******************************************************************
 module.exports.isOwner = async (req, res, next) => {
     const { id } = req.params
     const hotel = await Hotel.findById(id)
-    if (!hotel.owner.id.equals(req.user._id)) {
+    if (!hotel.owner.id.equals(req.user._id) && !req.user.isAdmin) {
         req.flash('error', 'You do not have permission to do that!')
         return res.redirect(`/hotels/${id}`)
     }
     next()
 }
 // *******************************************************************
-// HOTEL OWNER MIDDLEWARE - If the user is not the hotel owner
+// HOTEL OWNER MIDDLEWARE - If the user is not the hotel owner or admin
 // *******************************************************************
 module.exports.isNotOwner = async (req, res, next) => {
     const { id } = req.params
@@ -63,7 +63,8 @@ module.exports.isNotOwner = async (req, res, next) => {
 module.exports.isReviewAuthor = async (req, res, next) => {
     const { id, reviewId } = req.params
     const review = await Review.findById(reviewId)
-    if (!review.author.id.equals(req.user._id)) {
+    if (!review.author.id.equals(req.user._id) && !req.user.isAdmin) {
+        console.log(req.user)
         req.flash('error', 'You do not have permission to do that!')
         return res.redirect(`/hotels/${id}`)
     }
@@ -89,6 +90,16 @@ module.exports.isProfileOwner = async (req, res, next) => {
     const user = await User.findById(userId)
     if (!user._id.equals(req.user._id)) {
         req.flash('error', 'You do not have permission to do that!')
+        return res.redirect(`/hotels`)
+    }
+    next()
+}
+// ************************************************
+// ADMIN MIDDLEWARE - If the user is not the admin
+// ************************************************
+module.exports.isNotAdmin = async (req, res, next) => {
+    if (req.user.isAdmin) {
+        req.flash('error', 'You are an admin!')
         return res.redirect(`/hotels`)
     }
     next()

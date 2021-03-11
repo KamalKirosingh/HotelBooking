@@ -2,6 +2,28 @@
 
   <div class="container mt-4">    
     <div class="row">
+      <!-- if current user is admin -->
+      <% if (currentUser && currentUser.isAdmin){ %>
+        <div class="container text-center"><h1>Profile</h1></div>      
+        <div class="row col-lg-6 offset-3 mt-5">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <i class="fas fa-envelope"></i> <strong>Email: </strong><a href="mailto:<%= user.email %> "><%= user.email %></a>             
+            </li>
+            <li class="list-group-item">
+              <i class="far fa-calendar-alt"></i> <strong>Joined: </strong><span class="text-muted"><%= moment(user.joined).format('LL') %> </span>             
+            </li>              
+            <% if (currentUser && user._id.equals(currentUser._id)) { %>
+              <li class="list-group-item d-flex justify-content-center">
+                <a class="btn btn-info btn-sm float-left" href="/users/<%= user._id %>/edit">Edit Profile</a>
+                <form class="float-left" action="/users/<%= user._id %>?_method=DELETE" method="POST">
+                  <button type="submit" class="btn btn-danger btn-sm ml-1">Delete Account</button>
+                </form>
+              </li>
+            <% } %>             
+        </ul>
+
+      <% } else { %>
    <!-- left container -->
       <div class="col-12 col-md-6 col-lg-3">
           <!-- top left card -->
@@ -109,9 +131,10 @@
                   </div>
             <% }%>
           </div>
+          <% } %>
     </div>
   </div>
-
+</div>
 
 
 
