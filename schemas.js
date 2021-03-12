@@ -28,13 +28,24 @@ const Joi = BaseJoi.extend(extension)
 module.exports.hotelSchema = Joi.object({
     hotel: Joi.object({
         title: Joi.string().required().escapeHTML(),
-        price: Joi.number().required().min(0),
         location: Joi.string().required().escapeHTML(),
         description: Joi.string().required().escapeHTML(),
         phone: Joi.number().required().min(0),
         start: Joi.string().required().escapeHTML(),
         end: Joi.string().required().escapeHTML(),
-        amneties: Joi.string().required().escapeHTML(),
+        amenities: Joi.string().required().escapeHTML(),
+    }).required(),
+    deleteImages: Joi.array()
+})
+
+module.exports.roomSchema = Joi.object({
+    room: Joi.object({
+        title: Joi.string().required().escapeHTML(),
+        price: Joi.number().required().min(0),
+        description: Joi.string().required().escapeHTML(),
+        start: Joi.string().required().escapeHTML(),
+        end: Joi.string().required().escapeHTML(),
+        amenities: Joi.string().required().escapeHTML(),
     }).required(),
     deleteImages: Joi.array()
 })

@@ -114,7 +114,7 @@ app.use((req, res, next) => {
 // ROUTER MIDDLEWARE - use the routes
 // **********************************
 app.use('/hotels', hotelRoutes)
-app.use('/hotels/:id/reviews', reviewRoutes)
+app.use('/hotels/:id', reviewRoutes)
 app.use('/', userRoutes)
 
 // *****************

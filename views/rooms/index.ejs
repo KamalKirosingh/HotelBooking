@@ -1,5 +1,4 @@
 <% layout('layouts/boilerplate')%>
-<div id="cluster-map"></div>
 <div class="container"></div>
     <nav id="searchNav" class="navbar navbar-expand navbar-light bg-white shadow-sm">
         <div class="container">
@@ -12,22 +11,30 @@
                     Sort By
                   </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <form class="sortForm" action="/hotels" method="GET">
+                  <form class="sortForm" action="/hotels/<%= hotel._id %>/rooms" method="GET">
                     <input type="text" name="sortby" value="reviewAvg" class="d-none">
                     <button type="submit" class="dropdown-item">Highest Rated</button>
                   </form>
-                  <form class="sortForm" action="/hotels" method="GET">
+                  <form class="sortForm" action="/hotels/<%= hotel._id %>/rooms" method="GET">
                     <input type="text" name="sortby" value="reviewCount" class="d-none">
                     <button type="submit" class="dropdown-item">Most Reviewed</button>
                   </form>
-                  <a href="/hotels" href class="dropdown-item">Reset</a>
+                  <form class="sortForm" action="/hotels/<%= hotel._id %>/rooms" method="GET">
+                    <input type="text" name="sortby" value="priceLow" class="d-none">
+                    <button type="submit" class="dropdown-item">Lowest Price</button>
+                  </form>
+                  <form class="sortForm" action="/hotels/<%= hotel._id %>/rooms" method="GET">
+                    <input type="text" name="sortby" value="priceHigh" class="d-none">
+                    <button type="submit" class="dropdown-item">Highest Price</button>
+                  </form>
+                  <a href="/hotels/<%= hotel._id %>/rooms" href class="dropdown-item">Reset</a>
                 </div>
               </li>
             </ul>
-            <!-- search hotels -->
+            <!-- search rooms -->
             <div class="d-none d-md-block">
-              <form action="/hotels" method="GET" class="input-group">
-                <input type="text" class="form-control" type="text" name="search" placeholder="Search Hotels..." aria-label="Search">
+              <form action="/hotels/<%= hotel._id %>/rooms" method="GET" class="input-group">
+                <input type="text" class="form-control" type="text" name="search" placeholder="Search Rooms..." aria-label="Search">
                 <div class="input-group-append">
                   <button class="btn btn-success border-0" type="submit">
                         <i class="fa fa-search"></i>
@@ -42,8 +49,8 @@
         <div class="d-block d-none d-md-none">
             <% if(noMatch !== null) { %>
                 <h3><%= noMatch %></h3>
-          <form action="/hotels" method="GET" class="input-group shadow-sm mt-3">
-            <input type="text" class="form-control border-0" type="text" name="search" placeholder="Search Hotels..." aria-label="Search">
+          <form action="/hotels/<%= hotel._id %>/rooms" method="GET" class="input-group shadow-sm mt-3">
+            <input type="text" class="form-control border-0" type="text" name="search" placeholder="Search Rooms..." aria-label="Search">
             <div class="input-group-append">
               <button class="btn btn-success border-0" type="submit">
                 <i class="fa fa-search"></i>
@@ -52,38 +59,39 @@
           </form>
           <% } %>
         </div>
-        <!-- show hotels -->
+        <!-- show rooms -->
         <div class="row">
-    <% for (let hotel of hotels){%>
-        <div class="col-sm-12 col-md-6 col-lg-4 text-center">
+    <% for (let room of rooms){%>
+        <div class="col-sm-12 col-md-6 col-lg-4">
             <div class="card shadow border-0 mt-4">
-            <%if(hotel.images.length > 0) {%>
-              <a href="/hotels/<%= hotel._id %>"><img class="card-img-top index-image" src="<%= hotel.images[0].url %>"></a>
+            <%if(room.images.length > 0) {%>
+              <a href="/hotels/<%= hotel._id %>/rooms/<%= room._id %>"><img class="card-img-top index-image" src="<%= room.images[0].url %>"></a>
               <% }else {%>
-                <a href="/hotels/<%= hotel._id %>"><img class="card-img-top" src="https://res.cloudinary.com/djbw8u5ba/image/upload/v1615589199/HotelBooking/depositphotos_247872612-stock-illustration-no-image-available-icon-vector_xkku6t.jpg"></a>
+                <a href="/hotels/<%= hotel._id %>/rooms/<%= room._id %>"><img class="card-img-top index-image" src="https://res.cloudinary.com/djbw8u5ba/image/upload/v1615589199/HotelBooking/depositphotos_247872612-stock-illustration-no-image-available-icon-vector_xkku6t.jpg"></a>
                 <% } %>
               <div class="card-body">
                 <h5 class="card-title text-capitalize">
-                    <a href="/hotels/<%= hotel._id %>"><%= hotel.title %></a>
+                    <a href="/hotels/<%= hotel._id %>/rooms/<%= room._id %>"><%= room.title %></a>
                 </h5>
                 <h6 class="card-subtitle">
-                  <% if(hotel.reviews.length === 0) { %>
+                  <% if(room.reviews.length === 0) { %>
                     <span class="text-muted">No Reviews</span>
                   <% } else { %>
                     <!-- STAR CODE RE-USED FROM: https://github.com/LunarLogic/starability -->
                     <% let stars = ['<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>', '<i class="far fa-star text-success "></i>'] %>
-                    <% for(let i = 0; i < Math.round(hotel.reviewAvg); i++) { %>
+                    <% for(let i = 0; i < Math.round(room.reviewAvg); i++) { %>
                         <% stars[i] = '<i class="fas fa-star text-success "></i>' %>
                     <% } %>
                     <% for(let i = 0; i < stars.length; i++) { %>
                       <%- stars[i] %>
                     <% } %>
-                    <% if (hotel.reviews.length === 1) { %>
-                      <span class="text-muted"><%= hotel.reviews.length %> Review</span>
+                    <% if (room.reviews.length === 1) { %>
+                      <span class="text-muted"><%= room.reviews.length %> Review</span>
                     <% } else { %>
-                      <span class="text-muted"><%= hotel.reviews.length %> Reviews</span>
+                      <span class="text-muted"><%= room.reviews.length %> Reviews</span>
                     <% } %>
                   <% } %>
+                  <span class="ml-3">£<%= room.price %>/Night</span>
                 </h6>
               </div>
             </div>
@@ -91,9 +99,3 @@
     <% }%>
   </div>
 
-<script>
-    const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
-    const hotels = { features: <%- JSON.stringify(hotels) %>}
-</script>
-
-<script src="/javascripts/clusterMap.js"></script>

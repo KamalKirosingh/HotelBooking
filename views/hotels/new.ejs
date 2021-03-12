@@ -35,26 +35,10 @@
                     Please provide a valid location.
                   </div>
             </div>
-            <!-- price input -->
-            <div class="mb-3">
-                <label class="form-label" for="price">Price/Night*</label>
-                <div class="input-group">
-                    <span class="input-group-text" id="price-label">£</span>
-                    <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price"
-                    aria-describedby="price-label" name="hotel[price]" required>
-                </div>
-                <div class="valid-feedback">
-                    Looks good!
-                </div>
-                <div class="invalid-feedback">
-                    Please provide a price.
-                  </div>
-            </div>
             <!-- descrption input -->
             <div class="mb-3">
                 <label class="form-label" for="description">Description*</label>
-                <textarea class="form-control" type="text" id="description" name="hotel[description]"required>
-                </textarea>
+                <textarea class="form-control" type="text" id="description" name="hotel[description]"required></textarea>
             <div class="valid-feedback">
                 Looks good!
             </div>
@@ -66,7 +50,7 @@
              <div class="mb-3">
                 <div class="form-file custom-file">
                     <!-- name = 'image' has to match the upload.array('image') -->
-                    <input type="file" class="form-file-input" id="image" name="image" multiple>
+                    <input type="file" class="form-file-input" id="image" name="image" multiple required>
                     <label class="form-file-label" for="image">
                         <span class="form-file-text custom-file-label">Image*</span>
                         <span class="form-file-button">Browse</span>
@@ -109,10 +93,10 @@
                   </div>
                 </div>
               </div>
-              <!-- amneties input -->
+              <!-- amenities input -->
               <div class="form-group">
                 <label for="">Amenities separated by commas</label>
-                <input type="text" class="form-control" name="hotel[amneties]" placeholder="Example: swimming pool, gym, wifi">
+                <input type="text" class="form-control" name="hotel[amenities]" placeholder="Example: swimming pool, gym, wifi">
               </div>
 
             <div class="mb-3 mt-3">

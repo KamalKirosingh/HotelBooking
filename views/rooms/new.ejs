@@ -1,0 +1,104 @@
+<% layout('layouts/boilerplate')%>
+<div class="container mb-4">    
+    <div class="row">
+      <div class="col">
+      </div>
+      <div class="col-12 col-sm-12 col-lg-9">
+        <div class="card shadow border-0">          
+          <div class="card-body">
+<h1 class="text-center">Add Room</h1>
+
+    <p>
+        <small class="text-muted">Fields marked * are required.</small>
+      </p>
+    <form action="/hotels/<%= hotel._id%>/rooms" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+        <!-- title input -->
+        <div class="mb-3">
+            <label class="form-label" for="title">Title*</label>
+            <input class="form-control" type="text" id="title" name="room[title]" required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Please provide a room title.
+              </div>
+        </div>
+        <!-- price input -->
+        <div class="mb-3">
+            <label class="form-label" for="price">Price/Night*</label>
+            <div class="input-group">
+                <span class="input-group-text" id="price-label">£</span>
+                <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price"
+                aria-describedby="price-label" name="room[price]" required>
+            </div>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Please provide a price.
+              </div>
+        </div>
+        <!-- descrption input -->
+        <div class="mb-3">
+            <label class="form-label" for="description">Description*</label>
+            <textarea class="form-control" type="text" id="description" name="room[description]"required></textarea>
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+        <div class="invalid-feedback">
+            Please provide a description of your room.
+          </div>
+        </div>
+         <!-- image input -->
+         <div class="mb-3">
+            <div class="form-file custom-file">
+                <!-- name = 'image' has to match the upload.array('image') -->
+                <input type="file" class="form-file-input" id="image" name="image" multiple required>
+                <label class="form-file-label" for="image">
+                    <span class="form-file-text custom-file-label">Image*</span>
+                    <span class="form-file-button">Browse</span>
+                </label>
+                <div class="invalid-feedback">
+                    Please upload an image of your room.
+                  </div>
+            </div>
+        </div>
+          <!-- booking input -->
+          <label for="">Booking Window*</label>
+          <div class="row">
+            <div class="form-group col-md-6">
+              <input type="text" class="form-control" name="room[start]" placeholder="Starting Month" required>
+              <div class="valid-feedback">
+                Looks good!
+            </div>
+              <div class="invalid-feedback">
+                Please provide a booking window.
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <input type="text" class="form-control" name="room[end]" placeholder="Ending Month" required>
+              <div class="valid-feedback">
+                Looks good!
+            </div>
+              <div class="invalid-feedback">
+                Please provide a booking window.
+              </div>
+            </div>
+          </div>
+          <!-- amenities input -->
+          <div class="form-group">
+            <label for="">Amenities separated by commas</label>
+            <input type="text" class="form-control" name="room[amenities]" placeholder="Example: fridge, wifi, tv">
+          </div>
+
+        <div class="mb-3 mt-3">
+            <button class="btn btn-success">Add Room</button>
+        </div>
+    </form>
+</div>
+</div>
+</div>
+<div class="col">
+</div>
+</div>
+</div>

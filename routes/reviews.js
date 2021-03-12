@@ -4,10 +4,17 @@ const { validateReview, isLoggedIn, isReviewAuthor, isNotAdmin } = require('../m
 const catchAsync = require('../utils/catchAsync')
 const reviews = require('../controllers/reviews')
 
-router.post('/', isLoggedIn, validateReview, isNotAdmin, catchAsync(reviews.createReview))
+// hotel reviews
+router.post('/reviews', isLoggedIn, validateReview, isNotAdmin, catchAsync(reviews.createHotelReview))
 
-router.put('/:reviewId', isLoggedIn, isReviewAuthor, isNotAdmin, catchAsync(reviews.editReview))
+router.put('/reviews/:reviewId', isLoggedIn, isReviewAuthor, isNotAdmin, catchAsync(reviews.editHotelReview))
 
-router.delete('/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(reviews.deleteReview))
+router.delete('/reviews/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(reviews.deleteHotelReview))
 
+// room reviews
+router.post('/rooms/:roomId/reviews', isLoggedIn, validateReview, isNotAdmin, catchAsync(reviews.createRoomReview))
+
+router.put('/rooms/:roomId/reviews/:reviewId', isLoggedIn, isReviewAuthor, isNotAdmin, catchAsync(reviews.editRoomReview))
+
+router.delete('/rooms/:roomId/reviews/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(reviews.deleteRoomReview))
 module.exports = router

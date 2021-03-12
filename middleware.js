@@ -1,4 +1,4 @@
-const { hotelSchema, reviewSchema } = require('./schemas.js')
+const { hotelSchema, reviewSchema, roomSchema } = require('./schemas.js')
 const ExpressError = require('./utils/ExpressError')
 const Hotel = require('./models/hotel')
 const Review = require('./models/review')
@@ -103,4 +103,17 @@ module.exports.isNotAdmin = async (req, res, next) => {
         return res.redirect(`/hotels`)
     }
     next()
+}
+// *********************************************************
+// VALIDATE MIDDLEWARE - If the room req.body is valid 
+// *********************************************************
+module.exports.validateRoom = (req, res, next) => {
+    //.validate uses the joi method
+    const { error } = roomSchema.validate(req.body)
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next()
+    }
 }

@@ -7,7 +7,7 @@
         <div class="col-md-3">
           <div class="d-none d-md-block">
             <div class="lead text-center text-capitalize">
-              <%= hotel.name %>
+              <%= room.name %>
             </div>
             <!-- show booking window -->
             <div class="card shadow-sm mt-2">
@@ -16,13 +16,13 @@
               </div>
               <ul class="list-group list-group-flush">
                 <li class="list-group-item text-capitalize">
-                  <%= hotel.booking.start %> -
-                    <%= hotel.booking.end %>
+                  <%= room.booking.start %> -
+                    <%= room.booking.end %>
                 </li>
               </ul>
             </div>
             <!-- show amenities -->
-            <% if (hotel.amenities[0] === "") { %>
+            <% if (room.amenities[0] === "") { %>
               <% ; %>
                 <% } else { %>
                   <div class="card shadow-sm mt-3">
@@ -30,45 +30,26 @@
                       <i class="far fa-smile"></i> Amenities
                     </div>
                     <ul class="list-group list-group-flush">
-                      <% for (let i = 0; i < hotel.amenities.length; i++) { %>
+                      <% for (let i = 0; i < room.amenities.length; i++) { %>
                         <li class="list-group-item text-capitalize">
-                          <%= hotel.amenities[i] %>
+                          <%= room.amenities[i] %>
                         </li>
                         <% } %>
                     </ul>
                   </div>
                   <% } %>
-                  <!-- show phone number -->
-                    <div class="card shadow-sm mt-3">
-                      <div class="card-header">
-                        <i class="fas fa-phone"></i> Contact
-                      </div>
-                      <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                          <%= hotel.phone %>
-                        </li>
-                      </ul>
-                    </div>
-                    <!-- show map -->
-                    <div class="card shadow-sm mt-3">
-                      <div id="map"></div>
-                      <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><i class="fas fa-map-marker-alt"></i>
-                          <%= hotel.location %>
-                        </li>
-                      </ul>
-                    </div>
+  
           </div>
         </div>
         <!-- main section of page -->
         <div class="col-md-9">
           <div class="card shadow-sm">
               <!-- show image -->
-            <div id="hotelCarousel" class="carousel slide" data-ride="carousel">
+            <div id="roomCarousel" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner show-image">
-                  <% if(hotel.images.length !== 0) { %>
+                  <% if(room.images.length !== 0) { %>
                     <!-- make the first image "active" - displayed first -->
-                    <% hotel.images.forEach((img, i) => {  %>
+                    <% room.images.forEach((img, i) => {  %>
                     <div class="carousel-item <%= i === 0 ? 'active' : ''%>">
                       <img src="<%= img.url%>" class="d-block w-100" alt="">
                       <% }) %>
@@ -78,24 +59,24 @@
                     </div>
                 </div>
                 <!-- if there is more than one image, display the carousels  -->
-                <% if(hotel.images.length > 1) {%>
-                <a class="carousel-control-prev" href="#hotelCarousel" role="button" data-slide="prev">
+                <% if(room.images.length > 1) {%>
+                <a class="carousel-control-prev" href="#roomCarousel" role="button" data-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>
                 </a>
-                <a class="carousel-control-next" href="#hotelCarousel" role="button" data-slide="next">
+                <a class="carousel-control-next" href="#roomCarousel" role="button" data-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="sr-only">Next</span>
                 </a>
                 <% } %>
             </div>
-            <!-- hotel card-->
+            <!-- room card-->
             <div class="card-body">
-              <h5 class="card-title text-capitalize text-center">
-              <%= hotel.title %>
+              <h5 class="card-title text-capitalize">
+              <%= room.title %>
               <div>
                   <!-- show average review score -->
-                <% if(hotel.reviews.length === 0) { %>
+                <% if(room.reviews.length === 0) { %>
                   <small class="text-muted">No Reviews</small>
                 <% } else { %>
                    <!-- STAR CODE RE-USED FROM: https://github.com/LunarLogic/starability -->
@@ -106,75 +87,64 @@
                   <% for(let i = 0; i < stars.length; i++) { %>
                     <%- stars[i] %>
                   <% } %>
-                  <% if (hotel.reviews.length === 1) { %>
-                    <small class="text-muted"><%= hotel.reviews.length %> Review</small>
+                  <% if (room.reviews.length === 1) { %>
+                    <small class="text-muted"><%= room.reviews.length %> Review</small>
                   <% } else { %>
-                    <small class="text-muted"><%= hotel.reviews.length %> Reviews</small>
+                    <small class="text-muted"><%= room.reviews.length %> Reviews</small>
                   <% } %>
                 <% } %>
               </div>
             </h5>
               <p class="card-text">
-                <%= hotel.description %>
+                <%= room.description %>
               </p>
               <p class="card-text text-muted">
                 <span>Submitted by
-                <a href="/users/<%= hotel.owner.id %>">
-                  <%= hotel.owner.username %></a> on
-                <%= moment(hotel.created).format('LL') %>
+                <a href="/users/<%= room.owner.id %>">
+                  <%= room.owner.username %></a> on
+                <%= moment(room.created).format('LL') %>
               </span>
-               <!-- if current user is owner or admin, they can edit/delete hotel -->
-               <% if(currentUser && hotel.owner.id.equals(currentUser._id)) { %>
-                <form action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST" class="float-right">
+                  <!-- if current user is owner or admin, they can edit/delete room -->
+              <% if(currentUser && room.owner.id.equals(currentUser._id) || currentUser && currentUser.isAdmin) { %>
+                <form action="/hotels/<%= hotel._id %>/rooms/<%= room._id %>?_method=DELETE" method="POST" class="float-right">
                   <button class="btn text-dark btn-lg">
                   <i class="fas fa-trash-alt"></i>
                 </button>
                 </form>
-                <a href="/hotels/<%= hotel._id %>/edit" class="btn text-dark btn-lg float-right">
+                <a href="/hotels/<%= hotel._id %>/rooms/<%= room._id%>/edit" class="btn text-dark btn-lg float-right">
                 <i class="fas fa-pencil-alt"></i>
-                <a class="card-link btn btn-success" href="/hotels/<%=hotel._id%>/rooms">View Rooms</a>
-                <a class="card-link btn btn-info" href="/hotels/<%=hotel._id%>/rooms/new">Add Room</a>
               </a>
-                <% } else if (currentUser && currentUser.isAdmin) { %>
-                  <form action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST" class="float-right">
-                    <button class="btn text-dark btn-lg">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                  </form>
-                  <a href="/hotels/<%= hotel._id %>/edit" class="btn text-dark btn-lg float-right">
-                  <i class="fas fa-pencil-alt"></i>
-                  <a class="card-link btn btn-success" href="/hotels/<%=hotel._id%>/rooms">View Rooms</a>
-                  <% } else {  %>
-                    <span class="float-right"> 
-                        <a class="card-link btn btn-success" href="/hotels/<%=hotel._id%>/rooms">View Rooms</a>
+                <% } else { %>
+                    <span class="float-right">
+                        <a class="card-link btn btn-success" href="/hotels/<%= hotel._id %>/rooms/<%= room._id%>/booking">Book</a>
                       </span>
-                      <% } %>
+                      <% }%>
                 </p>
             </div>
           </div>
           <!-- review card -->
           <div class="card shadow-sm mt-4">
             <ul class="list-group list-group-flush">
-              <% if(currentUser && hotel.owner.id.equals(currentUser._id)) { %>
+              <% if(currentUser && room.owner.id.equals(currentUser._id)) { %>
                 <li class="list-group-item list-group-item-light">
-                  Your hotel has
-                  <% if (hotel.reviews.length === 0) { %>
+                  Your room has
+                  <% if (room.reviews.length === 0) { %>
                     no reviews.
-                    <% } else if (hotel.reviews.length === 1) { %>
+                    <% } else if (room.reviews.length === 1) { %>
                       1 review
                       <% } else { %>
-                        <%= hotel.reviews.length %> reviews
+                        <%= room.reviews.length %> reviews
                           <% } %>
                 </li>
                 <% } else if (currentUser && currentUser.isAdmin) { %>
                   <li class="list-group-item list-group-item-light">
-                    This hotel has
-                    <% if (hotel.reviews.length === 0) { %>
+                    This room has
+                    <% if (room.reviews.length === 0) { %>
                       no reviews.
-                      <% } else if (hotel.reviews.length === 1) { %>
+                      <% } else if (room.reviews.length === 1) { %>
                         1 review
                         <% } else { %>
-                          <%= hotel.reviews.length %> reviews
+                          <%= room.reviews.length %> reviews
                             <% } %>
                   </li>
                 <% } else { %>
@@ -185,7 +155,7 @@
                   <!-- write a review -->
                     <div class="collapse" id="collapseReview">
                       <div class="card-body">
-                        <form action="/hotels/<%=hotel._id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
+                        <form action="/hotels/<%=hotel._id%>/rooms/<%=room._id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
                             <fieldset class="starability-basic">
                                 <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked
                                     aria-label="No rating." />
@@ -214,7 +184,7 @@
                       </div>
                     </div>
                     <!-- show reviews -->
-                    <% hotel.reviews.forEach(function(review){ %>
+                    <% room.reviews.forEach(function(review){ %>
                       <li class="list-group-item">
                         <p>
                           <i class="fas fa-user"></i>
@@ -252,7 +222,7 @@
                       <i class="fas fa-pencil-alt"></i>
                     </a>
                     <!-- delete review -->
-                            <form id="deleteForm" action="/hotels/<%= hotel._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST" class="float-right">
+                            <form id="deleteForm" action="/hotels/<%= hotel._id %>/rooms/<%=room._id%>/reviews/<%= review._id %>?_method=DELETE" method="POST" class="float-right">
                               <button class="btn text-dark">
                                   <!-- delete icon -->
                         <i class="fas fa-trash-alt"></i>
@@ -262,7 +232,7 @@
                           <!-- edit review -->
                           <div class="collapse" id="editReview">
                             <div class="card-body">
-                                <form class="validated-form" action="/hotels/<%= hotel._id %>/reviews/<%= review._id %>?_method=PUT" method="POST" novalidate>
+                                <form class="validated-form" action="/hotels/<%= hotel._id %>/rooms/<%=room._id%>/reviews/<%= review._id %>?_method=PUT" method="POST" novalidate>
                                 <div class="form-group">
                                     <textarea class="form-control" name="review[body]" required><%= review.body %></textarea>
                                     <div class="invalid-feedback">
@@ -301,10 +271,3 @@
         </div>
       </div>
     </div>
-    <script>
-        const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
-        const hotel = <%- JSON.stringify(hotel) %>
-    </script>
-    
-    <script src="/javascripts/showPageMap.js"></script>
-    

@@ -1,4 +1,5 @@
 const Hotel = require('../models/hotel')
+const User = require('../models/user')
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding")
 const mapBoxToken = process.env.MAPBOX_TOKEN
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken })
@@ -31,18 +32,10 @@ module.exports.index = async (req, res) => {
           const hotels = await Hotel.find({}).sort({reviewAvg: -1}).populate('popupText')
           res.render("hotels/index", { hotels, noMatch })
            }
-        else if (req.query.sortby === "reviewCount") {
+        else {
           const hotels = await Hotel.find({}).sort({reviewCount: -1}).populate('popupText')
           res.render("hotels/index", { hotels, noMatch })
           } 
-        else if (req.query.sortby === "priceLow") {
-        const hotels = await Hotel.find({}).sort({price: 1}).populate('popupText')
-        res.render("hotels/index", { hotels, noMatch })
-       }
-        else {
-          const hotels = await Hotel.find({}).sort({price: -1}).populate('popupText')
-          res.render("hotels/index", { hotels, noMatch })
-          }
   } else {
       const hotels = await Hotel.find({}).populate('popupText')
       res.render('hotels/index', { hotels, noMatch })
@@ -63,19 +56,22 @@ module.exports.createHotel = async (req, res, next) => {
         limit: 1
     }).send()
     const hotel = new Hotel(req.body.hotel)
+    const user = await User.findById(req.user.id)
+    user.hotels.push(hotel)
+
     hotel.geometry = geoData.body.features[0].geometry
     hotel.images = req.files.map(f => ({ url: f.path, filename: f.filename }))
     hotel.booking = {
         start: req.body.hotel.start,
         end: req.body.hotel.end
       }
-    hotel.amneties = req.body.hotel.amneties.split(",")
+    hotel.amenities = req.body.hotel.amenities.split(",")
     hotel.owner = {
         id: req.user._id,
         username: req.user.username
     }
     await hotel.save()
-    console.log(hotel)
+    await user.save()
     req.flash('success', 'Successfully made a new hotel!')
     res.redirect(`/hotels/${hotel._id}`)
 }
@@ -130,6 +126,10 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.updateHotel = async (req, res) => {
     const { id } = req.params
     const hotel = await Hotel.findByIdAndUpdate(id, { ...req.body.hotel })
+    hotel.booking = {
+        start: req.body.hotel.start,
+        end: req.body.hotel.end
+      }
     const geoData = await geocoder.forwardGeocode({
         query: req.body.hotel.location,
         limit: 1
@@ -147,18 +147,6 @@ module.exports.updateHotel = async (req, res) => {
     }
     req.flash('success', 'Successfully updated hotel!')
     res.redirect(`/hotels/${hotel._id}`)
-}
-// *******************************************
-// BOOKING - renders the booking page
-// *******************************************
-module.exports.renderBookingForm = async (req, res) => {
-    const { id } = req.params
-    const hotel = await Hotel.findById(id)
-    if (!hotel) {
-        req.flash('error', 'Cannot find that hotel!')
-        return res.redirect('/hotels')
-    }
-    res.render('hotels/booking', { hotel})
 }
 // *******************************************
 // DELETE/DESTROY- removes a single hotel

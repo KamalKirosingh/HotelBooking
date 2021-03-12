@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const Review = require('./review')
-const Room = require('./room')
 const Schema = mongoose.Schema
 
 const ImageSchema = new Schema({
@@ -16,25 +15,14 @@ ImageSchema.virtual('thumbnail').get(function () {
 
 const opts = { toJSON: { virtuals: true } }
 
-const HotelSchema = new Schema({
+const RoomSchema = new Schema({
+    hotel: { type: Schema.Types.ObjectId, ref: 'Hotel'},
     title: String,
     images: [ImageSchema],
-    phone: String,
+    price: Number,
     amenities: [],
     created: { type: Date, default: Date.now },
-    geometry: {
-        type: {
-            type: String,
-            enum: ['Point'],
-            required: true
-        },
-        coordinates: {
-            type: [Number],
-            required: true
-        }
-    },
     description: String,
-    location: String,
     owner: {
         id: {
         type: Schema.Types.ObjectId,
@@ -59,32 +47,20 @@ const HotelSchema = new Schema({
     booking: {
         start: String,
         end: String
-      },
-    rooms: [{type: Schema.Types.ObjectId, ref: 'Room'}]
+      }
 }, opts)
 
 
-HotelSchema.virtual('properties.popUpMarkup').get(function () {
-    return `
-    <strong><a href="/hotels/${this._id}">${this.title}</a><strong>
-    <p>${this.description.substring(0, 20)}...</p>`
-})
-
-//middleware to delete all reviews and rooms when a hotel is deleted
-//doc is the hotel that just got deleted
+//middleware to delete all reviews when a room is deleted
+//doc is the room that just got deleted
 //if a post request is sent with 'findOneAndDelete', then this function will run
-HotelSchema.post('findOneAndDelete', async function (doc) {
+RoomSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
         await Review.deleteMany({
             _id: {
                 $in: doc.reviews
             }
         })
-        await Room.deleteMany({
-            _id: {
-                $in: doc.rooms
-            }
-        })
     }
 })
-module.exports = mongoose.model('Hotel', HotelSchema)
+module.exports = mongoose.model('Room', RoomSchema)
