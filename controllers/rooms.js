@@ -1,5 +1,7 @@
 const Room = require('../models/room')
+const Review = require('../models/review')
 const Hotel = require('../models/hotel')
+const User = require('../models/user')
 const { cloudinary } = require("../cloudinary")
 
 //CODE RE-USED FROM: https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex/6969486#6969486
@@ -17,7 +19,7 @@ module.exports.index = async (req, res) => {
     // if the user searches a room
     if(req.query.search) {
         const regex = new RegExp(escapeRegex(req.query.search), 'gi')
-        const rooms = await Room.find({$or: [{title: regex}], "hotel.id" : id})
+        const rooms = await Room.find({$or: [{title: regex}], "hotel" : { "_id" : id }})
               if(rooms.length < 1) {
                   noMatch = "No rooms match that query, please try again."
                   res.render("rooms/index", { hotel, rooms, noMatch })
@@ -29,23 +31,24 @@ module.exports.index = async (req, res) => {
     // if the user filters
     else if (req.query.sortby) {
         if (req.query.sortby === "reviewAvg") {
-          const rooms = await Room.find({"hotel.id" : id}).sort({reviewAvg: -1})
+          const rooms = await Room.find({"hotel" : { "_id" : id }}).sort({reviewAvg: -1})
           res.render("rooms/index", { hotel, rooms, noMatch })
            }
         else if (req.query.sortby === "reviewCount") {
-          const rooms = await Room.find({"hotel.id" : id}).sort({reviewCount: -1})
+          const rooms = await Room.find({"hotel" : { "_id" : id }}).sort({reviewCount: -1})
           res.render("rooms/index", { hotel, rooms, noMatch })
           } 
         else if (req.query.sortby === "priceLow") {
-        const rooms = await Room.find({"hotel.id" : id}).sort({price: 1})
-        res.render("rooms/index", { hotel, rooms, noMatch })
+          const rooms = await Room.find({"hotel" : { "_id" : id }}).sort({price: 1})
+          res.render("rooms/index", { hotel, rooms, noMatch })
        }
         else {
-          const rooms = await Room.find({"hotel.id" : id}).sort({price: -1})
+          const rooms = await Room.find({"hotel" : { "_id" : id }}).sort({price: -1})
           res.render("rooms/index", { hotel, rooms, noMatch })
           }
   } else {
-      const rooms = await Room.find({"hotel.id" : id})
+      const rooms = await Room.find({"hotel" : { "_id" : id }})
+      console.log(rooms)
       res.render('rooms/index', { hotel, rooms, noMatch })
     }
 }
@@ -62,9 +65,12 @@ module.exports.renderNewRoomForm = async(req, res) => {
 // *********************************
 module.exports.createRoom = async (req, res, next) => {
     const { id } = req.params
-    const hotel = await Hotel.findById(id)
     const room = new Room(req.body.room)
+    const user = await User.findById(req.user.id)
+
+    const hotel = await Hotel.findById(id)
     room.hotel = hotel
+    room.reviewCount = room.reviews.length
     room.images = req.files.map(f => ({ url: f.path, filename: f.filename }))
     room.booking = {
         start: req.body.room.start,
@@ -76,10 +82,12 @@ module.exports.createRoom = async (req, res, next) => {
         username: req.user.username
     }
     hotel.rooms.push(room)
+    user.rooms.push(room)
+    await user.save()
     await room.save()
     await hotel.save()
     req.flash('success', 'Successfully made a new room!')
-    res.redirect(`/hotels/${hotel._id}/rooms/${room._id}`)
+    res.redirect(`/hotels/${id}/rooms/${room._id}`)
 }
 // **********************************************
 // SHOW - details about one particular room
@@ -96,23 +104,23 @@ module.exports.showRoom = async (req, res,) => {
     }).populate('author')
     if (!room) {
         req.flash('error', 'Cannot find that room!')
-        return res.redirect('/rooms')
+        return res.redirect(`/hotels/${hotel._id}/rooms`)
     }
     // if the user has made a review already
     const ratingsArray = []
     room.reviews.forEach(function(rating) {
-        ratingsArray.push(rating.rating);
+        ratingsArray.push(rating.rating)
       })
       if (ratingsArray.length === 0) {
-        room.reviewAvg = 0;
+        room.reviewAvg = 0
       } else {
         const ratings = ratingsArray.reduce(function(total, rating) {
-          return total + rating;
+          return total + rating
         })
-        room.reviewAvg = ratings / room.reviews.length;
-        room.reviewCount = room.reviews.length;
+        room.reviewAvg = ratings / room.reviews.length
+        room.reviewCount = room.reviews.length
       }
-      room.save();
+      room.save()
       res.render('rooms/show', { room, hotel })
 }
       
@@ -121,11 +129,10 @@ module.exports.showRoom = async (req, res,) => {
 // *******************************************
 module.exports.renderEditRoomForm = async (req, res) => {
     const { id, roomId} = req.params
-    const hotel = await Hotel.findById(id)
     const room = await Room.findById(roomId)
     if (!room) {
         req.flash('error', 'Cannot find that room!')
-        return res.redirect(`/hotels/${hotel._id}/rooms`)
+        return res.redirect(`/hotels/${id}/rooms`)
     }
     res.render('rooms/edit', { room, hotel })
 }
@@ -134,7 +141,6 @@ module.exports.renderEditRoomForm = async (req, res) => {
 // *******************************************
 module.exports.updateRoom = async (req, res) => {
     const { id, roomId} = req.params
-    const hotel = await Hotel.findById(id)
     const room = await Room.findByIdAndUpdate(roomId, { ...req.body.room })
     room.booking = {
         start: req.body.room.start,
@@ -151,18 +157,17 @@ module.exports.updateRoom = async (req, res) => {
         await room.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
     }
     req.flash('success', 'Successfully updated room!')
-    res.redirect(`/hotels/${hotel._id}/rooms/${room._id}`)
+    res.redirect(`/hotels/${id}/rooms/${roomId}`)
 }
 // *******************************************
 // BOOKING - renders the booking page
 // *******************************************
 module.exports.renderBookingForm = async (req, res) => {
     const { id, roomId} = req.params
-    const hotel = await Hotel.findById(id)
     const room = await Room.findById(roomId)
     if (!room) {
         req.flash('error', 'Cannot find that room!')
-        return res.redirect(`/hotels/${hotel._id}/rooms`)
+        return res.redirect(`/hotels/${id}/rooms`)
     }
     res.render('rooms/booking', { room, hotel })
 }
@@ -171,10 +176,31 @@ module.exports.renderBookingForm = async (req, res) => {
 // *******************************************
 module.exports.deleteRoom = async (req, res) => {
     const { id, roomId} = req.params
-    const hotel = await Hotel.findById(id)
+    const room = await Room.findById(roomId)
+
+    // remove the room from the owner
+    await User.findByIdAndUpdate(room.owner.id, { $pull: { rooms: roomId } })
+    console.log("ROOM REMOVED FROM OWNER")
+     // remove the room from the hotel
+    await Hotel.findByIdAndUpdate(id, { $pull: { rooms: roomId } })
+    console.log("ROOM REMOVED FROM HOTEL")
+
+    const reviews = room.reviews
+    if (reviews) {
+    // for each review to the room
+        for (let reviewId of reviews) {
+            const review = await Review.findById(reviewId)
+            // remove the reviewGiven from the users to the room
+            await User.findByIdAndUpdate(review.author.id, { $pull: { reviewsGiven: reviewId } })
+            console.log("ROOM REVIEWGIVEN REMOVED FROM USER")
+            // remove the reviewFor in the room owner
+            await User.findByIdAndUpdate(room.owner.id, { $pull: { reviewsFor: reviewId } })
+            console.log("REMOVEFOR FROM OWNER")
+        }
+    }
+
     await Room.findByIdAndDelete(roomId)
     req.flash('success', 'Successfully deleted room')
-    res.redirect(`/hotels/${hotel._id}/rooms`)
+    res.redirect(`/hotels/${id}/rooms`)
 } 
-
 

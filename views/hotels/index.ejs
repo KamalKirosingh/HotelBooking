@@ -67,7 +67,7 @@
                     <a href="/hotels/<%= hotel._id %>"><%= hotel.title %></a>
                 </h5>
                 <h6 class="card-subtitle">
-                  <% if(hotel.reviews.length === 0) { %>
+                  <% if(hotel.reviewCount === 0) { %>
                     <span class="text-muted">No Reviews</span>
                   <% } else { %>
                     <!-- STAR CODE RE-USED FROM: https://github.com/LunarLogic/starability -->
@@ -78,10 +78,10 @@
                     <% for(let i = 0; i < stars.length; i++) { %>
                       <%- stars[i] %>
                     <% } %>
-                    <% if (hotel.reviews.length === 1) { %>
-                      <span class="text-muted"><%= hotel.reviews.length %> Review</span>
+                    <% if (hotel.reviewCount === 1) { %>
+                      <span class="text-muted"><%= hotel.reviewCount %> Review</span>
                     <% } else { %>
-                      <span class="text-muted"><%= hotel.reviews.length %> Reviews</span>
+                      <span class="text-muted"><%= hotel.reviewCount %> Reviews</span>
                     <% } %>
                   <% } %>
                 </h6>

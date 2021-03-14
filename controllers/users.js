@@ -1,5 +1,6 @@
 const User = require('../models/user')
 const Hotel = require('../models/hotel')
+const Room = require('../models/room')
 const Review = require('../models/review')
 const async = require('async')
 const nodemailer = require('nodemailer')
@@ -210,7 +211,61 @@ module.exports.updateProfile = async (req, res) => {
 // *******************************************
 module.exports.deleteUser = async (req, res) => {
     const { userId } = req.params
+    const user = await User.findById(userId)
+
+    // remove the reviewsGiven from other users to this users hotels or rooms 
+    const reviewsFor = user.reviewsFor
+    if (reviewsFor)
+      for (let reviewId of reviewsFor) {
+        const review = await Review.findById(reviewId)
+        await User.findByIdAndUpdate(review.author.id, { $pull: { reviewsGiven: review.id } })
+        }
+        const reviewsGiven = user.reviewsGiven
+        if (reviewsGiven) {
+          for (let reviewId of reviewsGiven) {
+              const review = await Review.findById(reviewId)
+              // for each review by the deleted user, if the review is for a hotel:
+              if (review.hotel) {
+                console.log(review.hotel)
+                const hotel = await Hotel.findById(review.hotel)
+                // remove the reviews from this user to other users reviewFor
+                 await User.findByIdAndUpdate(hotel.owner.id, { $pull: { reviewsFor: reviewId } })
+                // remove the reviews from the hotels 
+                const hotelOwner = await User.findById(hotel.owner.id)
+                for (let hotelId of hotelOwner.hotels) {
+                  const hotel = await Hotel.findById(hotelId)
+                  await Hotel.findByIdAndUpdate(hotelId, { $pull: { reviews: reviewId } })
+                  await Hotel.findByIdAndUpdate(hotelId, { $pull: { hasRated: { $in: [review.author.id] } }})
+
+                  let newReviewCount = hotel.reviewCount - 1
+                  if (newReviewCount < 0) {
+                      newReviewCount = 0
+                   }
+                  await Hotel.findByIdAndUpdate(hotel.id, {$set: {reviewCount: newReviewCount }})
+                }
+              }
+              // for each review by the deleted user, if the review is for a room:
+              else {
+                const room = await Room.findById(review.room)
+                // remove the reviews from this user to other users reviewFor
+                 await User.findByIdAndUpdate(room.owner.id, { $pull: { reviewsFor: reviewId } })
+                // remove the reviews from the rooms 
+                const roomOwner = await User.findById(room.owner.id)
+                for (let roomId of roomOwner.rooms) {
+                  const room = await Room.findById(roomId)
+                  await Room.findByIdAndUpdate(roomId, { $pull: { reviews: reviewId } })
+                  await Room.findByIdAndUpdate(roomId, { $pull: { hasRated: { $in: [review.author.id] } }})
+
+                  let newReviewCount = room.reviewCount - 1
+                  if (newReviewCount < 0) {
+                      newReviewCount = 0
+                   }
+                  await Room.findByIdAndUpdate(room.id, {$set: {reviewCount: newReviewCount }})
+                }
+              }
+            }
+          }
     await User.findByIdAndDelete(userId)
     req.flash('success', 'Successfully deleted user')
     res.redirect('/')
-} 
+}  

@@ -2,8 +2,8 @@
 
   <div class="container mt-4">    
     <div class="row">
-      <!-- if current user is admin -->
-      <% if (currentUser && currentUser.isAdmin){ %>
+      <!-- if user profile is admin -->
+      <% if (user.isAdmin) { %>
         <div class="container text-center"><h1>Profile</h1></div>      
         <div class="row col-lg-6 offset-3 mt-5">
           <ul class="list-group list-group-flush">
@@ -79,14 +79,20 @@
               <li class="list-group-item">
                 <i class="far fa-calendar-alt"></i> <strong>Joined: </strong><span class="text-muted"><%= moment(user.joined).format('LL') %> </span>             
               </li>              
-              <% if (currentUser && user._id.equals(currentUser._id)) { %>
+              <% if (currentUser && currentUser.isAdmin) { %>
                 <li class="list-group-item d-flex justify-content-center">
-                  <a class="btn btn-info btn-sm float-left" href="/users/<%= user._id %>/edit">Edit Profile</a>
                   <form class="float-left" action="/users/<%= user._id %>?_method=DELETE" method="POST">
                     <button type="submit" class="btn btn-danger btn-sm ml-1">Delete Account</button>
                   </form>
                 </li>
-              <% } %>             
+              <% } else if (currentUser && user._id.equals(currentUser._id)) { %>
+                <li class="list-group-item d-flex justify-content-center">
+                  <a class="btn btn-info btn-sm float-left" href="/users/<%= user._id %>/edit">Edit Profile</a>  
+                  <form class="float-left" action="/users/<%= user._id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-danger btn-sm ml-1">Delete Account</button>
+                  </form>
+                </li> 
+                <% } %>          
           </ul>
         </div>
       </div>
@@ -108,7 +114,7 @@
                             <a href="/hotels/<%= hotel._id %>"><%= hotel.title %></a>
                         </h5>
                         <h6 class="card-subtitle">
-                          <% if(hotel.reviews.length === 0) { %>
+                          <% if(hotel.reviewCount === 0) { %>
                             <span class="text-muted">No Reviews</span>
                           <% } else { %>
                              <!-- STAR CODE RE-USED FROM: https://github.com/LunarLogic/starability -->
@@ -119,10 +125,10 @@
                             <% for(let i = 0; i < stars.length; i++) { %>
                               <%- stars[i] %>
                             <% } %>
-                            <% if (hotel.reviews.length === 1) { %>
-                              <span class="text-muted"><%= hotel.reviews.length %> Review</span>
+                            <% if (hotel.reviewCount === 1) { %>
+                              <span class="text-muted"><%= hotel.reviewCount %> Review</span>
                             <% } else { %>
-                              <span class="text-muted"><%= hotel.reviews.length %> Reviews</span>
+                              <span class="text-muted"><%= hotel.reviewCount %> Reviews</span>
                             <% } %>
                           <% } %>
                         </h6>

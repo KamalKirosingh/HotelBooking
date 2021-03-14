@@ -12,6 +12,14 @@ const ReviewSchema = new Schema({
         },
         username: String
       },
-      rating: Number
+      rating: Number,
+    hotel: {
+      type: mongoose.Schema.Types.ObjectId,
+          ref: "Hotel"
+    },
+    room: {
+      type: mongoose.Schema.Types.ObjectId,
+          ref: "Room"
+    }
     })
 module.exports = mongoose.model("Review", ReviewSchema)

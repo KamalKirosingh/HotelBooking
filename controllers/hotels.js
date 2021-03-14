@@ -1,5 +1,7 @@
 const Hotel = require('../models/hotel')
 const User = require('../models/user')
+const Review = require('../models/review')
+const Room = require('../models/room')
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding")
 const mapBoxToken = process.env.MAPBOX_TOKEN
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken })
@@ -57,8 +59,8 @@ module.exports.createHotel = async (req, res, next) => {
     }).send()
     const hotel = new Hotel(req.body.hotel)
     const user = await User.findById(req.user.id)
-    user.hotels.push(hotel)
 
+    hotel.reviewCount = hotel.reviews.length
     hotel.geometry = geoData.body.features[0].geometry
     hotel.images = req.files.map(f => ({ url: f.path, filename: f.filename }))
     hotel.booking = {
@@ -71,6 +73,7 @@ module.exports.createHotel = async (req, res, next) => {
         username: req.user.username
     }
     await hotel.save()
+    user.hotels.push(hotel)
     await user.save()
     req.flash('success', 'Successfully made a new hotel!')
     res.redirect(`/hotels/${hotel._id}`)
@@ -93,18 +96,18 @@ module.exports.showHotel = async (req, res,) => {
     // if the user has made a review already
     const ratingsArray = []
     hotel.reviews.forEach(function(rating) {
-        ratingsArray.push(rating.rating);
+        ratingsArray.push(rating.rating)
       })
       if (ratingsArray.length === 0) {
-        hotel.reviewAvg = 0;
+        hotel.reviewAvg = 0
       } else {
         const ratings = ratingsArray.reduce(function(total, rating) {
-          return total + rating;
+          return total + rating
         })
-        hotel.reviewAvg = ratings / hotel.reviews.length;
-        hotel.reviewCount = hotel.reviews.length;
+        hotel.reviewAvg = ratings / hotel.reviews.length
+        hotel.reviewCount = hotel.reviews.length
       }
-      hotel.save();
+      hotel.save()
       res.render('hotels/show', { hotel })
 }
       
@@ -153,9 +156,52 @@ module.exports.updateHotel = async (req, res) => {
 // *******************************************
 module.exports.deleteHotel = async (req, res) => {
     const { id } = req.params
+    const hotel = await Hotel.findById(id)
+    // remove the hotel from the owner
+    await User.findByIdAndUpdate(hotel.owner.id, { $pull: { hotels: id } })
+    console.log("HOTEL REMOVED FROM OWNER")
+    
+    const reviews = hotel.reviews
+    if (reviews) {
+        // for each review to the hotel
+        for (let reviewId of reviews) {
+            const review = await Review.findById(reviewId)
+            // remove the reviewGiven from the users to the hotel
+            await User.findByIdAndUpdate(review.author.id, { $pull: { reviewsGiven: reviewId } })
+            console.log("HOTEL REVIEWGIVEN REMOVED FROM USER")
+            // remove the reviewFor in the hotel owner
+            await User.findByIdAndUpdate(hotel.owner.id, { $pull: { reviewsFor: reviewId } })
+            console.log("REMOVEFOR FROM OWNER")
+        }
+    }
+    const hotelOwner = await User.findById(hotel.owner.id)
+    const rooms = hotelOwner.rooms
+    if (rooms) {
+        for (let roomId of rooms) {
+            const room = await Room.findById(roomId)
+            // remove the hotel from the owner
+            await User.findByIdAndUpdate(room.owner.id, { $pull: { rooms: room.id } })
+            console.log("ROOM REMOVED FROM OWNER")
+            const reviews = room.reviews
+            if (reviews) {
+                // for each review to the room
+                for (let reviewId of reviews) {
+                    const review = await Review.findById(reviewId)
+                    // remove the reviewGiven from the users to the rooms of the hotel
+                    await User.findByIdAndUpdate(review.author.id, { $pull: { reviewsGiven: reviewId } })
+                    console.log("ROOM REVIEWGIVEN REMOVED FROM USER")
+                    // remove the reviewFor in the room owner
+                     await User.findByIdAndUpdate(room.owner.id, { $pull: { reviewsFor: reviewId } })
+                    console.log("REMOVEFOR FROM OWNER")
+                    //  delete the review
+                    await Review.findByIdAndDelete(reviewId)
+                    console.log("REVIEW DELETED")
+                }  
+            }   
+        }  
+
     await Hotel.findByIdAndDelete(id)
     req.flash('success', 'Successfully deleted hotel')
     res.redirect('/hotels')
-} 
-
-
+    } 
+}

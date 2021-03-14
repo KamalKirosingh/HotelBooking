@@ -58,6 +58,9 @@
                         </li>
                       </ul>
                     </div>
+                    <div class=mt-3>
+                    <a class="card-link btn btn-info" href="/hotels">Back</a>
+                    </div>
           </div>
         </div>
         <!-- main section of page -->
@@ -95,7 +98,7 @@
               <%= hotel.title %>
               <div>
                   <!-- show average review score -->
-                <% if(hotel.reviews.length === 0) { %>
+                <% if(hotel.reviewCount === 0) { %>
                   <small class="text-muted">No Reviews</small>
                 <% } else { %>
                    <!-- STAR CODE RE-USED FROM: https://github.com/LunarLogic/starability -->
@@ -106,10 +109,10 @@
                   <% for(let i = 0; i < stars.length; i++) { %>
                     <%- stars[i] %>
                   <% } %>
-                  <% if (hotel.reviews.length === 1) { %>
-                    <small class="text-muted"><%= hotel.reviews.length %> Review</small>
+                  <% if (hotel.reviewCount === 1) { %>
+                    <small class="text-muted"><%= hotel.reviewCount %> Review</small>
                   <% } else { %>
-                    <small class="text-muted"><%= hotel.reviews.length %> Reviews</small>
+                    <small class="text-muted"><%= hotel.reviewCount %> Reviews</small>
                   <% } %>
                 <% } %>
               </div>
@@ -124,7 +127,7 @@
                 <%= moment(hotel.created).format('LL') %>
               </span>
                <!-- if current user is owner or admin, they can edit/delete hotel -->
-               <% if(currentUser && hotel.owner.id.equals(currentUser._id)) { %>
+               <% if(currentUser && hotel.owner.id.equals(currentUser._id) || (currentUser && currentUser.isAdmin)) { %>
                 <form action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST" class="float-right">
                   <button class="btn text-dark btn-lg">
                   <i class="fas fa-trash-alt"></i>
@@ -133,18 +136,8 @@
                 <a href="/hotels/<%= hotel._id %>/edit" class="btn text-dark btn-lg float-right">
                 <i class="fas fa-pencil-alt"></i>
                 <a class="card-link btn btn-success" href="/hotels/<%=hotel._id%>/rooms">View Rooms</a>
-                <a class="card-link btn btn-info" href="/hotels/<%=hotel._id%>/rooms/new">Add Room</a>
               </a>
-                <% } else if (currentUser && currentUser.isAdmin) { %>
-                  <form action="/hotels/<%= hotel._id %>?_method=DELETE" method="POST" class="float-right">
-                    <button class="btn text-dark btn-lg">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                  </form>
-                  <a href="/hotels/<%= hotel._id %>/edit" class="btn text-dark btn-lg float-right">
-                  <i class="fas fa-pencil-alt"></i>
-                  <a class="card-link btn btn-success" href="/hotels/<%=hotel._id%>/rooms">View Rooms</a>
-                  <% } else {  %>
+                <% } else {  %>
                     <span class="float-right"> 
                         <a class="card-link btn btn-success" href="/hotels/<%=hotel._id%>/rooms">View Rooms</a>
                       </span>

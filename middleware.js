@@ -88,7 +88,7 @@ module.exports.validateReview = (req, res, next) => {
 module.exports.isProfileOwner = async (req, res, next) => {
     const { userId } = req.params
     const user = await User.findById(userId)
-    if (!user._id.equals(req.user._id)) {
+    if (!user._id.equals(req.user._id) && !req.user.isAdmin) {
         req.flash('error', 'You do not have permission to do that!')
         return res.redirect(`/hotels`)
     }
