@@ -9,18 +9,6 @@
             <div class="lead text-center text-capitalize">
               <%= room.name %>
             </div>
-            <!-- show booking window -->
-            <div class="card shadow-sm mt-2">
-              <div class="card-header">
-                <i class="far fa-calendar-alt"></i> Booking Window
-              </div>
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item text-capitalize">
-                  <%= room.booking.start %> -
-                    <%= room.booking.end %>
-                </li>
-              </ul>
-            </div>
             <!-- show amenities -->
             <% if (room.amenities[0] === "") { %>
               <% ; %>
@@ -116,7 +104,7 @@
               </a>
                 <% } else { %>
                     <span class="float-right">
-                        <a class="card-link btn btn-success" href="/hotels/<%= hotel._id %>/rooms/<%= room._id%>/booking">Book</a>
+                        <a class="card-link btn btn-success" href="/hotels/<%= hotel._id %>/rooms/<%= room._id%>/bookings/new">Book</a>
                       </span>
                       <% }%>
                 </p>

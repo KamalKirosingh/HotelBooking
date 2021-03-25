@@ -2,9 +2,11 @@ const User = require('../models/user')
 const Hotel = require('../models/hotel')
 const Room = require('../models/room')
 const Review = require('../models/review')
+const Booking = require('../models/booking')
 const async = require('async')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
+const booking = require('../models/booking')
 
 // ****************************
 // NEW - renders register form 
@@ -213,6 +215,30 @@ module.exports.deleteUser = async (req, res) => {
     const { userId } = req.params
     const user = await User.findById(userId)
 
+     // remove the bookings from this user to other rooms
+     const bookings = user.bookings
+     if (bookings) {
+       for (let bookingId of bookings) {
+         const booking = await Booking.findById(bookingId)
+         await Room.findByIdAndUpdate(booking.room, { $pull: { bookings: bookingId } })
+         }
+       }
+         
+     // remove the bookings from other users to this users rooms
+     const rooms = user.rooms
+     for (let roomId of rooms) {
+        let room = await Room.findById(roomId)
+        const otherBookings = room.bookings
+        if (otherBookings) {
+          for (let bookingId of otherBookings) {
+            const otherBooking = await Booking.findById(bookingId)
+            await User.findByIdAndUpdate(otherBooking.author.id, { $pull: { bookings: bookingId } })
+            //  delete the booking
+            await Booking.findByIdAndDelete(otherBooking)
+          }
+        }
+      }
+   
     // remove the reviewsGiven from other users to this users hotels or rooms 
     const reviewsFor = user.reviewsFor
     if (reviewsFor)

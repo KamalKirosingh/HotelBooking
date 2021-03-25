@@ -1,0 +1,58 @@
+
+    <% layout('layouts/boilerplate')%>
+    <div class="container mb-4">    
+        <div class="row">
+          <div class="col">
+          </div>
+          <div class="col-12 col-sm-12 col-lg-9">
+            <div class="card shadow border-0">          
+              <div class="card-body">
+    <h1 class="text-center">Booking</h1>
+        <p>
+            <small class="text-muted">Fields marked * are required.</small>
+          </p>
+        <form action="/hotels/<%=hotel._id%>/rooms/<%=room._id%>/bookings" method="POST">
+            <div class="row">
+            <div class="col-md-6 mb-3">
+                    <label for="checkin" class="control-label">Check In*</label>
+                    <input class="form-control" type="date" name="booking[checkin]" id="checkin" required> 
+                 </div>
+            <div class="col-md-6 mb-3">
+                    <label for="checkout" class="control-labåel">Check Out*</label>
+                    <input class="form-control" type="date" name="booking[checkout]" id="checkout" required> 
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="" class="control-label">Number of Guests*</label>
+                <select name="booking[guests]" class="form-select" aria-label="">
+                    <option selected value="1" name="booking[guests]">One</option>
+                    <option value="2" >Two</option>
+                    <option value="3" >Three</option>
+                    <option value="4">Four</option>
+                    <option value="5" >Five</option>
+                    <option value="6" >Six</option>
+                    <option value="7" >Seven</option>
+                  </select>
+            </div>
+      
+            <div class="mb-3 mt-3">
+                <button class="btn btn-success">Proceed to Checkout</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<div class="col">
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+

@@ -2,6 +2,7 @@ const Hotel = require('../models/hotel')
 const User = require('../models/user')
 const Review = require('../models/review')
 const Room = require('../models/room')
+const Booking = require('../models/booking')
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding")
 const mapBoxToken = process.env.MAPBOX_TOKEN
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken })
@@ -53,6 +54,7 @@ module.exports.renderNewForm = (req, res) => {
 // CREATE - creates a new hotel
 // *********************************
 module.exports.createHotel = async (req, res, next) => {
+    console.log(req.body)
     const geoData = await geocoder.forwardGeocode({
         query: req.body.hotel.location,
         limit: 1
@@ -179,6 +181,19 @@ module.exports.deleteHotel = async (req, res) => {
     if (rooms) {
         for (let roomId of rooms) {
             const room = await Room.findById(roomId)
+            // remove the bookings from other users to this room
+            const bookings = room.bookings
+            if (bookings) {
+              for (let bookingId of bookings) {
+                const booking = await Booking.findById(bookingId)
+                await User.findByIdAndUpdate(booking.author.id, { $pull: { bookings: bookingId } })
+                console.log("BOOKINGS REMOVED FROM AUTHORS")
+                 //  delete the booking
+                await Booking.findByIdAndDelete(booking)
+                console.log("BOOKING DELETED")
+              }
+            }
+
             // remove the hotel from the owner
             await User.findByIdAndUpdate(room.owner.id, { $pull: { rooms: room.id } })
             console.log("ROOM REMOVED FROM OWNER")

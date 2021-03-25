@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Review = require('./review')
+const Booking = require('./booking')
 const Schema = mongoose.Schema
 
 const ImageSchema = new Schema({
@@ -39,19 +40,19 @@ const RoomSchema = new Schema({
     reviewAvg: Number,
     reviewCount: Number,
     hasRated: [
-    {
+        {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
-    }
-  ],
-    booking: {
-        start: String,
-        end: String
-      }
+        }
+    ],
+    bookings: [ {
+        type: Schema.Types.ObjectId,
+        ref: 'Booking'
+    }],
 }, opts)
 
 
-//middleware to delete all reviews when a room is deleted
+//middleware to delete all reviews and bookings when a room is deleted
 //doc is the room that just got deleted
 //if a post request is sent with 'findOneAndDelete', then this function will run
 RoomSchema.post('findOneAndDelete', async function (doc) {
@@ -59,6 +60,11 @@ RoomSchema.post('findOneAndDelete', async function (doc) {
         await Review.deleteMany({
             _id: {
                 $in: doc.reviews
+            }
+        })
+        await Booking.deleteMany({
+            _id: {
+                $in: doc.bookings
             }
         })
     }

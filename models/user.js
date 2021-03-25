@@ -4,6 +4,7 @@ const passportLocalMongoose = require('passport-local-mongoose')
 const Review = require('./review')
 const Hotel = require('./hotel')
 const Room = require('./room')
+const Booking = require('./booking')
 
 const UserSchema = new Schema({
     email: {type: String, unique: true, required: true},
@@ -22,6 +23,12 @@ const UserSchema = new Schema({
         {
             type: Schema.Types.ObjectId,
             ref: 'Room'
+        }
+    ],
+    bookings: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Booking'
         }
     ],
     reviewsGiven: [
@@ -60,6 +67,11 @@ UserSchema.post('findOneAndDelete', async function (doc) {
         await Room.deleteMany({
             _id: {
                 $in: doc.rooms
+            }
+        })
+        await Booking.deleteMany({
+            _id: {
+                $in: doc.bookings
             }
         })
     }

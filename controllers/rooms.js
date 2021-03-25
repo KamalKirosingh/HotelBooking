@@ -2,6 +2,7 @@ const Room = require('../models/room')
 const Review = require('../models/review')
 const Hotel = require('../models/hotel')
 const User = require('../models/user')
+const Booking = require('../models/booking')
 const { cloudinary } = require("../cloudinary")
 
 //CODE RE-USED FROM: https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex/6969486#6969486
@@ -160,24 +161,23 @@ module.exports.updateRoom = async (req, res) => {
     res.redirect(`/hotels/${id}/rooms/${roomId}`)
 }
 // *******************************************
-// BOOKING - renders the booking page
-// *******************************************
-module.exports.renderBookingForm = async (req, res) => {
-    const { id, roomId} = req.params
-    const room = await Room.findById(roomId)
-    if (!room) {
-        req.flash('error', 'Cannot find that room!')
-        return res.redirect(`/hotels/${id}/rooms`)
-    }
-    res.render('rooms/booking', { room, hotel })
-}
-// *******************************************
 // DELETE/DESTROY- removes a single room
 // *******************************************
 module.exports.deleteRoom = async (req, res) => {
     const { id, roomId} = req.params
     const room = await Room.findById(roomId)
 
+    // remove the bookings from other users to this room
+    const bookings = room.bookings
+    if (bookings) {
+      for (let bookingId of bookings) {
+        console.log(bookingId)
+        const booking = await Booking.findById(bookingId)
+        console.log(booking)
+        await User.findByIdAndUpdate(booking.author.id, { $pull: { bookings: bookingId } })
+        console.log("BOOKINGS REMOVED FROM AUTHORS")
+       }
+    }
     // remove the room from the owner
     await User.findByIdAndUpdate(room.owner.id, { $pull: { rooms: roomId } })
     console.log("ROOM REMOVED FROM OWNER")

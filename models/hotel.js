@@ -56,10 +56,6 @@ const HotelSchema = new Schema({
       ref: "User"
     }
   ],
-    booking: {
-        start: String,
-        end: String
-      },
     rooms: [{type: Schema.Types.ObjectId, ref: 'Room'}]
 }, opts)
 
@@ -70,7 +66,7 @@ HotelSchema.virtual('properties.popUpMarkup').get(function () {
     <p>${this.description.substring(0, 20)}...</p>`
 })
 
-//middleware to delete all reviews and rooms when a hotel is deleted
+//middleware to delete all bookings, reviews and rooms when a hotel is deleted
 //doc is the hotel that just got deleted
 //if a post request is sent with 'findOneAndDelete', then this function will run
 HotelSchema.post('findOneAndDelete', async function (doc) {

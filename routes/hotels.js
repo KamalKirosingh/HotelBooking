@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router()
 const hotels = require('../controllers/hotels')
 const rooms = require('../controllers/rooms')
+const bookings = require('../controllers/bookings')
 const catchAsync = require('../utils/catchAsync')
-const { isLoggedIn, isOwner, isNotOwner, isNotAdmin, validateHotel, validateRoom } = require('../middleware')
+const { isLoggedIn, isOwner, isNotOwner, isNotAdmin, validateHotel, validateRoom, validateBooking, isBookingAuthor } = require('../middleware')
 const multer = require('multer')
 const { storage } = require('../cloudinary')
 const upload = multer({ storage })
@@ -26,7 +27,7 @@ router.route('/:id')
 
 router.get('/:id/edit', isLoggedIn, isOwner, catchAsync(hotels.renderEditForm))
 
-// room routes
+// room routes with booking
 
 router.route('/:id/rooms')
 .get(catchAsync(rooms.index))
@@ -41,6 +42,17 @@ router.route('/:id/rooms/:roomId')
 
 router.get('/:id/rooms/:roomId/edit', isLoggedIn, isOwner, catchAsync(rooms.renderEditRoomForm))
 
+router.route('/:id/rooms/:roomId/bookings')
+    .get(isLoggedIn, isOwner, catchAsync(bookings.index))
+    .post(isLoggedIn, isNotOwner, isNotAdmin, validateBooking, catchAsync(bookings.createBooking))
 
-router.get('/:id/rooms/:roomId/booking', isLoggedIn, isNotOwner, isNotAdmin, catchAsync(rooms.renderBookingForm))
+router.get('/:id/rooms/:roomId/bookings/new', isLoggedIn, isNotOwner, isNotAdmin, catchAsync(bookings.renderBookingForm))
+
+router.route('/:id/rooms/:roomId/:bookingId')
+    .get(isBookingAuthor, catchAsync(bookings.showBooking))
+    .delete(isLoggedIn, isBookingAuthor, catchAsync(bookings.deleteBooking))
+    .post(isLoggedIn, isBookingAuthor, isNotOwner, isNotAdmin, catchAsync(bookings.submitPayment))
+
+router.get('/:id/rooms/:roomId/:bookingId/payment', isLoggedIn, isBookingAuthor, isNotOwner, isNotAdmin, catchAsync(bookings.renderPaymentForm))
+    
 module.exports = router;

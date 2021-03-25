@@ -22,7 +22,7 @@ const LocalStrategy = require('passport-local')
 const User = require('./models/user')
 const helmet = require('helmet')
 const mongoSanitize = require('express-mongo-sanitize')
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/hotel-booking'
+
 const MongoDBStore = require("connect-mongo")(session)
 
 
@@ -49,6 +49,7 @@ app.use(mongoSanitize({
 // *********************************** 
 // MONGO - connect to mongoose 
 // ***********************************
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/hotel-booking'
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
