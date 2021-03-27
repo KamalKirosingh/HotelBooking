@@ -6,7 +6,6 @@ const Booking = require('../models/booking')
 const async = require('async')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
-const booking = require('../models/booking')
 
 // ****************************
 // NEW - renders register form 
@@ -175,20 +174,22 @@ module.exports.reset = (req, res) => {
 // SHOW - details about the current user
 // **********************************************
 module.exports.showProfile = async (req, res,) => {
-    const user = await User.findById(req.params.userId)
-    const hotels = await Hotel.find({"owner.id" : req.params.userId})
-    const reviews = await Review.find({"author.id" : req.params.userId})
+  const { userId } = req.params
+    const user = await User.findById(userId)
+    const hotels = await Hotel.find({"owner.id" : userId})
+    const reviews = await Review.find({"author.id" : userId})
+    const bookings = await Booking.find({"author.id" : userId})
     if (!user) {
         req.flash('error', 'Cannot find that user!')
         return res.redirect('/hotels')
     }
-    res.render('users/show', { hotels, user, reviews })
+    res.render('users/show', { hotels, user, reviews, bookings })
 }
 // ***********************************************
 // EDIT - renders a form to edit the user details
 // **********************************************
 module.exports.renderEditForm = async (req, res) => {
-    const { userId } = req.params;
+    const { userId } = req.params
     const user = await User.findById(userId)
     if (!user) {
         req.flash('error', 'Cannot find user!')
@@ -221,6 +222,7 @@ module.exports.deleteUser = async (req, res) => {
        for (let bookingId of bookings) {
          const booking = await Booking.findById(bookingId)
          await Room.findByIdAndUpdate(booking.room, { $pull: { bookings: bookingId } })
+         await Room.findByIdAndUpdate(booking.room, { $pull: { hasBooked: { $in: [booking.author.id] } }})
          }
        }
          

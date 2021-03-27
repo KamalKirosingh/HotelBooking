@@ -7,7 +7,9 @@ const User = require('../models/user')
 // CREATE - creates a new review 
 // ***********************************
 module.exports.createHotelReview = async (req, res) => {
-    const hotel = await Hotel.findById(req.params.id)
+    const { id } = req.params
+    const hotel = await Hotel.findById(id)
+
     let ratedArray = []
     hotel.hasRated.forEach(function(rated) {
       ratedArray.push(String(rated))
@@ -77,43 +79,51 @@ module.exports.deleteHotelReview = async (req, res) => {
     req.flash('success', 'Successfully deleted review')
     res.redirect(`/hotels/${id}`)
 }
-
-
 // *********************************** 
 // CREATE - creates a new review 
 // ***********************************
 module.exports.createRoomReview = async (req, res) => {
     const { id, roomId} = req.params
     const room = await Room.findById(roomId)
-    let ratedArray = []
-    room.hasRated.forEach(function(rated) {
-      ratedArray.push(String(rated))
+
+    let bookedArray = []
+    room.hasBooked.forEach(function(booked) {
+      bookedArray.push(String(booked))
     })
-    if (ratedArray.includes(String(req.user._id))) {
-      req.flash('error', "You've already reviewed this room, please edit your review instead.")
+    if (!bookedArray.includes(String(req.user._id))) {
+      req.flash('error', "You must have booked this room to review it.")
       res.redirect(`/hotels/${id}/rooms/${roomId}`)
-     } else {
-        const review = new Review(req.body.review)
-        review.author.id = req.user._id
-        review.author.username = req.user.username
-        review.room = room
+    } else {
+        let ratedArray = []
+        room.hasRated.forEach(function(rated) {
+        ratedArray.push(String(rated))
+        })
+        if (ratedArray.includes(String(req.user._id))) {
+            req.flash('error', "You've already reviewed this room, please edit your review instead.")
+            res.redirect(`/hotels/${id}/rooms/${roomId}`)
+        } else {
+            const review = new Review(req.body.review)
+            review.author.id = req.user._id
+            review.author.username = req.user.username
+            review.room = room
 
-        room.hasRated.push(req.user._id)
-        room.reviewCount = room.reviews.length
-        room.reviews.push(review)
+            room.hasRated.push(req.user._id)
+            room.reviewCount = room.reviews.length
+            room.reviews.push(review)
 
-        const user = await User.findById(req.user.id)
-        user.reviewsGiven.push(review)
+            const user = await User.findById(req.user.id)
+            user.reviewsGiven.push(review)
 
-        const roomOwner = await User.findById(room.owner.id)
-        roomOwner.reviewsFor.push(review)
+            const roomOwner = await User.findById(room.owner.id)
+            roomOwner.reviewsFor.push(review)
 
-        await review.save()
-        await room.save()
-        await user.save()
-        await roomOwner.save()
-        req.flash('success', 'Created new review!')
-        res.redirect(`/hotels/${id}/rooms/${roomId}`)
+            await review.save()
+            await room.save()
+            await user.save()
+            await roomOwner.save()
+            req.flash('success', 'Created new review!')
+            res.redirect(`/hotels/${id}/rooms/${roomId}`)
+            }  
         }
     }
 // *******************************************

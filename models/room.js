@@ -49,6 +49,12 @@ const RoomSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Booking'
     }],
+    hasBooked: [
+        {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+        }
+    ]
 }, opts)
 
 

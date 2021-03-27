@@ -143,3 +143,15 @@ module.exports.isBookingAuthor = async (req, res, next) => {
     }
     next()
 }
+// *************************************************************
+// BOOKING COMPLETE MIDDLEWARE - If the user has made the payment
+// *************************************************************
+module.exports.isBooked = async (req, res, next) => {
+    const { id, roomId, bookingId } = req.params
+    const booking = await Booking.findById(bookingId)
+    if (!booking.isBooked ) {
+        req.flash('error', 'You have not completed the booking!')
+        return res.redirect(`/hotels/${id}/rooms/${roomId}/bookings/${bookingId}/payment`)
+    }
+    next()
+}

@@ -1,0 +1,30 @@
+<% layout('layouts/boilerplate')%>
+<div class="container">
+<div class="container text-center"><h1>Bookings</h1></div>      
+  <a class="card-link btn btn-info mb-3" href="/hotels/<%= hotel._id %>/rooms/<%= room._id%>">Back</a>
+        <div class="container">
+        <!-- show bookings -->
+        <div class="row">
+    <% for (let booking of bookings){%>
+        <% if(booking.isBooked) { %>
+        <div class="col-sm-12 col-md-6 col-lg-4">
+            <div class="card shadow border-0 mt-4">
+              <div class="card-body text-center">
+                <h5 class="card-title text-capitalize">
+                  <span><a href="/hotels/<%= hotel._id %>/rooms/<%= room._id%>/bookings/<%= booking._id %>"><%= booking._id %></a></span>
+                </h5>
+                <h6 class="card-subtitle">
+                  <strong><div>Total amount: £</strong><%= booking.amount %></div>
+                  <strong><div>Number of Guests:</strong> <%= booking.guests %></div>
+                  <strong><div>Number of Nights:</strong> <%= booking.nights %></div>
+                  <strong><div>Checkin:</strong> <%= booking.checkin %></div>
+                  <strong><div>Checkout:</strong> <%= booking.checkout %></div>
+                </h6>
+              </div>
+            </div>
+          </div>
+          <% }%>
+    <% }%>
+  </div>
+</div>
+</div>

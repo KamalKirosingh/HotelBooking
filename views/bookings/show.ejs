@@ -1,0 +1,31 @@
+<% layout('layouts/boilerplate')%>
+    <div class="card shadow-sm mt-3 col-lg-6 offset-3">
+    <div class="card-header text-capitalize text-center">
+        Booking Details        
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <i class="far fa-calendar-alt"></i> <strong>Checkin: </strong><span class="text-muted"><%= booking.checkin %> </span>   
+        </li>
+        <li class="list-group-item">
+          <i class="far fa-calendar-alt"></i> <strong>Checkout: </strong><span class="text-muted"><%= booking.checkout %> </span>             
+        </li>
+        <li class="list-group-item">
+         <i class="fas fa-user"></i><strong> Guests: </strong><span class="text-muted"><%= booking.guests %> </span>             
+          </li>    
+          
+          <li class="list-group-item">
+           <strong>Total £: </strong><span class="text-muted"><%= booking.amount %> </span>             
+             </li>          
+             <span class="text-center mt-3">Booked by
+              <a href="/users/<%= booking.author.id %>">
+                <%= booking.author.username %></a> on
+              <%= moment(booking.created).format('LL') %>
+            </span>    
+          <li class="list-group-item d-flex justify-content-center">
+            <form action="/hotels/<%=hotel._id%>/rooms/<%=room._id%>/bookings/<%=booking._id%>?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-danger btn-sm ml-1">Delete Booking</button>
+            </form>
+          </li> 
+    </ul>
+  </div>

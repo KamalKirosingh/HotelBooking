@@ -15,6 +15,8 @@ app.locals.moment = require("moment")
 const hotelRoutes = require('./routes/hotels')
 const reviewRoutes = require('./routes/reviews')
 const userRoutes = require('./routes/users')
+const roomRoutes = require('./routes/rooms')
+const bookingRoutes = require('./routes/bookings')
 const session = require('express-session')
 const flash = require('connect-flash')
 const passport = require('passport')
@@ -116,6 +118,8 @@ app.use((req, res, next) => {
 // **********************************
 app.use('/hotels', hotelRoutes)
 app.use('/hotels/:id', reviewRoutes)
+app.use('/hotels/:id/rooms', roomRoutes)
+app.use('/hotels/:id/rooms/:roomId/bookings', bookingRoutes)
 app.use('/', userRoutes)
 
 // *****************

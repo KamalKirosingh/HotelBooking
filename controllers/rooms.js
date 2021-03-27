@@ -131,6 +131,7 @@ module.exports.showRoom = async (req, res,) => {
 module.exports.renderEditRoomForm = async (req, res) => {
     const { id, roomId} = req.params
     const room = await Room.findById(roomId)
+    const hotel = await Hotel.findById(id)
     if (!room) {
         req.flash('error', 'Cannot find that room!')
         return res.redirect(`/hotels/${id}/rooms`)
@@ -171,9 +172,7 @@ module.exports.deleteRoom = async (req, res) => {
     const bookings = room.bookings
     if (bookings) {
       for (let bookingId of bookings) {
-        console.log(bookingId)
         const booking = await Booking.findById(bookingId)
-        console.log(booking)
         await User.findByIdAndUpdate(booking.author.id, { $pull: { bookings: bookingId } })
         console.log("BOOKINGS REMOVED FROM AUTHORS")
        }

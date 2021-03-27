@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const BookingSchema = new Schema({
+    hotel: {
+        type: Schema.Types.ObjectId,
+        ref: 'Hotel'
+    },
     room: {
         type: Schema.Types.ObjectId,
         ref: 'Room'
@@ -18,14 +22,11 @@ const BookingSchema = new Schema({
         username: String
       },
     guests: {type: Number},
-    dateCreated: {
+    created: {
         type: Date,
         default: Date.now
     },
-    room: {
-      type: mongoose.Schema.Types.ObjectId,
-          ref: "Room"
-    }
+    isBooked : {type: Boolean, default: false}
 })
 
 module.exports = mongoose.model('Booking', BookingSchema)

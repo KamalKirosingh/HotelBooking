@@ -112,7 +112,6 @@ module.exports.showHotel = async (req, res,) => {
       hotel.save()
       res.render('hotels/show', { hotel })
 }
-      
 // *******************************************
 // EDIT - renders a form to edit a hotel
 // *******************************************
