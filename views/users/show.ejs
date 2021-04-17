@@ -157,6 +157,8 @@
                       </div>
                     </div>
                   </div>
+                  <% } %>
+                    <!-- if the user has hotels and bookings -->
                   <% if (bookings.length > 0) { %>
                     <div class="container text-center"><h1>Bookings</h1></div>      
                     <!-- show bookings -->
@@ -185,7 +187,6 @@
                       <% }%>
                 <% }%>
               </div>
-            <% }%>
           </div>
            <!-- if the user has bookings but no hotels -->
           <% } else { %>

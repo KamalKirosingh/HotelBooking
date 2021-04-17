@@ -15,7 +15,7 @@ module.exports.index = async (req, res) => {
       res.render('bookings/index', { hotel, room, bookings })
 }
 // *******************************************
-// BOOKING - renders the booking page
+// CREATE - renders the booking form
 // *******************************************
 module.exports.renderBookingForm = async (req, res) => {
     const { id, roomId } = req.params
