@@ -55,7 +55,7 @@ module.exports.login = (req, res) => {
 module.exports.logout = (req, res) => {
     req.logout()
     req.flash('success', "Goodbye!")
-    res.redirect('/hotels')
+    res.redirect('login')
 } 
 // ************************************************
 // FORGOT PASSWORD - renders a forgot password form

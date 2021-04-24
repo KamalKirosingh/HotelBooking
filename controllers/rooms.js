@@ -202,4 +202,3 @@ module.exports.deleteRoom = async (req, res) => {
     req.flash('success', 'Successfully deleted room')
     res.redirect(`/hotels/${id}/rooms`)
 } 
-

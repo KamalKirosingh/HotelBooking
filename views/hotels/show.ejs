@@ -96,8 +96,7 @@
                   <% } %>
                   <% for(let i = 0; i < stars.length; i++) { %>
                     <%- stars[i] %>
-                  <% } %>
-                  <% if (hotel.reviewCount === 1) { %>
+                  <% } if (hotel.reviewCount === 1) { %>
                     <small class="text-muted"><%= hotel.reviewCount %> Review</small>
                   <% } else { %>
                     <small class="text-muted"><%= hotel.reviewCount %> Reviews</small>
@@ -288,4 +287,3 @@
     </script>
     
     <script src="/javascripts/showPageMap.js"></script>
-    

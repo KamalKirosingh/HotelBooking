@@ -137,6 +137,10 @@ module.exports.isBookingAuthor = async (req, res, next) => {
     const { id, roomId, bookingId } = req.params
     const booking = await Booking.findById(bookingId)
     const hotel = await Hotel.findById(id)
+    if (!booking) {
+        req.flash('error', 'Cannot find that booking!')
+        res.redirect(`/hotels/${id}/rooms/${roomId}`)
+    }
     if (!booking.author.id.equals(req.user._id) && !hotel.owner.id.equals(req.user._id) && !req.user.isAdmin ) {
         req.flash('error', 'You do not have permission to do that!')
         return res.redirect(`/hotels/${id}/rooms/${roomId}`)
@@ -149,6 +153,10 @@ module.exports.isBookingAuthor = async (req, res, next) => {
 module.exports.isBooked = async (req, res, next) => {
     const { id, roomId, bookingId } = req.params
     const booking = await Booking.findById(bookingId)
+    if (!booking) {
+        req.flash('error', 'Cannot find that booking!')
+        res.redirect(`/hotels/${id}/rooms/${roomId}`)
+    }
     if (!booking.isBooked ) {
         req.flash('error', 'You have not completed the booking!')
         return res.redirect(`/hotels/${id}/rooms/${roomId}/bookings/${bookingId}/payment`)
